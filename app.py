@@ -22,33 +22,7 @@ ensure_session_state()
 render_sidebar()
 render_brand_header()
 
-
-# ─────────────────────────────────────────────
-# 오프닝: 타이틀
-# ─────────────────────────────────────────────
-st.markdown(
-    f'<div style="margin-top:24px;margin-bottom:8px;">'
-    f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:11px;'
-    f'color:{COLORS["accent_gold"]};letter-spacing:0.2em;margin-bottom:12px;">'
-    f'AI HACKATHON · SCM CAPSTONE · 인천대학교 동북아물류대학원</div>'
-    f'<div style="font-family:\'Noto Serif KR\',serif;font-size:42px;'
-    f'font-weight:900;color:{COLORS["text_primary"]};line-height:1.25;'
-    f'letter-spacing:-0.02em;margin-bottom:12px;">'
-    f'AI 머신비전 기반<br>'
-    f'<span style="color:{COLORS["accent_gold"]};">실시간 생산·재고 검증</span> 시스템'
-    f'</div>'
-    f'<div style="font-size:16px;color:{COLORS["text_secondary"]};line-height:1.7;'
-    f'max-width:760px;margin-bottom:24px;">'
-    f'식품 제조 공장의 생산 라인에서 출고까지, '
-    f'P-Box 단위 변환 지점의 정보 손실을 AI Vision으로 차단하고 '
-    f'<strong style="color:{COLORS["text_primary"]};">WMS 재고 정확성</strong>을 확보합니다.'
-    f'</div>'
-    f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;'
-    f'color:{COLORS["text_muted"]};">발표자 · 정승현 &nbsp;|&nbsp; 인천대학교 동북아물류대학원</div>'
-    f'</div>',
-    unsafe_allow_html=True,
-)
-
+st.markdown("")
 
 # ─────────────────────────────────────────────
 # 핵심 평가 기준 3가지
