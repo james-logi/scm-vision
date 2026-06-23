@@ -1,61 +1,57 @@
 """
-출고 재고 검수 관리 - 디자인 시스템
-HTML 프로토타입의 다크 네이비 + 무광 골드 톤을 Streamlit에 주입.
+출고 재고 검수 관리 - 디자인 시스템 v2
+화이트 배경 + 딥블루 비즈니스 톤 (Notion / Linear 스타일)
 """
 
 import streamlit as st
 
 
 # ============================================================
-# 컬러 팔레트 (HTML 프로토타입과 동일)
+# 컬러 팔레트
 # ============================================================
 COLORS = {
-    "bg_deep": "#0a1429",
-    "bg_panel": "#111d3a",
-    "bg_elevated": "#182850",
-    "bg_card": "#1c2f5c",
-    "border_subtle": "#243760",
-    "border_strong": "#34507c",
+    # 배경
+    "bg_deep":     "#FFFFFF",
+    "bg_panel":    "#F8FAFC",
+    "bg_elevated": "#F1F5F9",
+    "bg_card":     "#FFFFFF",
+    "border_subtle": "#E2E8F0",
+    "border_strong": "#CBD5E1",
 
-    "text_primary": "#f1f5fa",
-    "text_secondary": "#a8b8cf",
-    "text_tertiary": "#6a7c9c",
-    "text_muted": "#4a5a7a",
+    # 텍스트
+    "text_primary":   "#0F172A",
+    "text_secondary": "#334155",
+    "text_tertiary":  "#64748B",
+    "text_muted":     "#94A3B8",
 
-    "accent_gold": "#c9a55c",
-    "accent_gold_dim": "#8a7340",
-    "accent_cobalt": "#4a7fc8",
+    # 브랜드 컬러
+    "accent_gold":     "#1E40AF",   # 딥블루 (골드 대체)
+    "accent_gold_dim": "#BFDBFE",   # 연한 블루
+    "accent_cobalt":   "#0891B2",   # 틸 블루
 
-    "status_ok": "#5ec19c",
-    "status_warning": "#d4a557",
-    "status_danger": "#d4685c",
-    "status_info": "#6a9bd1",
+    # 상태
+    "status_ok":      "#059669",
+    "status_warning": "#D97706",
+    "status_danger":  "#DC2626",
+    "status_info":    "#0284C7",
 }
 
 
 # ============================================================
-# 전역 CSS 주입
+# 전역 CSS
 # ============================================================
 def inject_global_styles():
-    """Streamlit 페이지 진입 시 호출. HTML 프로토타입의 톤을 적용."""
-
     css = f"""
     <style>
-    /* ── 한글 폰트 ── */
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
-    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
 
     /* ── 배경/본문 ── */
     .stApp {{
-        background: {COLORS['bg_deep']};
-        background-image:
-            radial-gradient(circle at 15% 10%, rgba(74, 127, 200, 0.06), transparent 50%),
-            radial-gradient(circle at 85% 90%, rgba(201, 165, 92, 0.04), transparent 50%);
+        background: #FFFFFF;
         color: {COLORS['text_primary']};
-        font-family: 'Pretendard', -apple-system, sans-serif;
+        font-family: 'Noto Sans KR', 'Inter', -apple-system, sans-serif;
     }}
 
-    /* 메인 컨텐츠 영역 */
     .main .block-container {{
         padding-top: 1.5rem;
         padding-bottom: 2rem;
@@ -63,275 +59,171 @@ def inject_global_styles():
     }}
 
     /* ── 헤딩 ── */
-    h1, h2, h3 {{
-        font-family: 'Noto Serif KR', serif;
-        color: {COLORS['text_primary']};
+    h1 {{
+        font-family: 'Noto Sans KR', sans-serif;
+        font-weight: 700;
+        font-size: 1.75rem !important;
+        color: {COLORS['text_primary']} !important;
         letter-spacing: -0.02em;
+        margin-bottom: 0.25rem !important;
+    }}
+    h2, h3 {{
+        font-family: 'Noto Sans KR', sans-serif;
+        font-weight: 600;
+        color: {COLORS['text_primary']} !important;
     }}
 
     /* ── 사이드바 ── */
     section[data-testid="stSidebar"] {{
-        background: {COLORS['bg_panel']};
-        border-right: 1px solid {COLORS['border_subtle']};
+        background: #F8FAFC;
+        border-right: 1px solid #E2E8F0;
     }}
-
     section[data-testid="stSidebar"] * {{
         color: {COLORS['text_secondary']};
     }}
+    section[data-testid="stSidebar"] .stSelectbox label,
+    section[data-testid="stSidebar"] .stRadio label {{
+        color: {COLORS['text_tertiary']} !important;
+        font-size: 12px;
+    }}
 
     /* ── 버튼 ── */
-    .stButton button {{
-        background: {COLORS['bg_elevated']};
-        color: {COLORS['text_primary']};
-        border: 1px solid {COLORS['border_strong']};
-        border-radius: 4px;
-        font-weight: 500;
-        transition: all 0.15s;
-    }}
-
-    .stButton button:hover {{
-        background: {COLORS['bg_card']};
-        border-color: {COLORS['accent_gold_dim']};
-        color: {COLORS['text_primary']};
-    }}
-
-    /* Primary 버튼 (type="primary") */
-    .stButton button[kind="primary"] {{
+    .stButton > button {{
         background: {COLORS['accent_gold']};
-        color: {COLORS['bg_deep']};
-        border-color: {COLORS['accent_gold']};
-        font-weight: 600;
-    }}
-
-    .stButton button[kind="primary"]:hover {{
-        background: #d6b366;
-    }}
-
-    /* ── Selectbox ── */
-    div[data-baseweb="select"] > div {{
-        background: {COLORS['bg_deep']};
-        border: 1px solid {COLORS['border_strong']};
-        color: {COLORS['text_secondary']};
-    }}
-
-    /* ── 라디오/토글 ── */
-    div[data-testid="stRadio"] label {{
-        color: {COLORS['text_secondary']};
-    }}
-
-    /* ── 메트릭 카드 ── */
-    div[data-testid="stMetric"] {{
-        background: {COLORS['bg_panel']};
-        border: 1px solid {COLORS['border_subtle']};
-        border-left: 3px solid {COLORS['accent_cobalt']};
+        color: white;
+        border: none;
         border-radius: 6px;
-        padding: 16px 18px;
+        font-weight: 600;
+        font-size: 14px;
+        padding: 8px 16px;
+        transition: all 0.15s ease;
+    }}
+    .stButton > button:hover {{
+        background: #1D4ED8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(30,64,175,0.25);
+    }}
+    .stButton > button[kind="secondary"] {{
+        background: white;
+        color: {COLORS['text_secondary']};
+        border: 1px solid {COLORS['border_subtle']};
+    }}
+    .stButton > button[kind="secondary"]:hover {{
+        background: {COLORS['bg_elevated']};
+        transform: none;
+        box-shadow: none;
     }}
 
-    div[data-testid="stMetricLabel"] {{
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 10px !important;
-        color: {COLORS['text_tertiary']} !important;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
+    /* ── 입력 필드 ── */
+    .stTextInput > div > div > input,
+    .stTextArea textarea,
+    .stSelectbox > div > div {{
+        background: white;
+        border: 1px solid {COLORS['border_subtle']};
+        border-radius: 6px;
+        color: {COLORS['text_primary']};
+        font-size: 14px;
+    }}
+    .stTextInput > div > div > input:focus,
+    .stTextArea textarea:focus {{
+        border-color: {COLORS['accent_gold']};
+        box-shadow: 0 0 0 3px rgba(30,64,175,0.1);
     }}
 
-    div[data-testid="stMetricValue"] {{
-        font-family: 'Noto Serif KR', serif !important;
-        font-weight: 700 !important;
-        color: {COLORS['text_primary']} !important;
+    /* ── 파일 업로더 ── */
+    .stFileUploader > div {{
+        background: {COLORS['bg_panel']};
+        border: 2px dashed {COLORS['border_subtle']};
+        border-radius: 8px;
+    }}
+
+    /* ── 탭 ── */
+    .stTabs [data-baseweb="tab-list"] {{
+        background: {COLORS['bg_panel']};
+        border-radius: 8px;
+        padding: 4px;
+        gap: 4px;
+        border-bottom: none;
+    }}
+    .stTabs [data-baseweb="tab"] {{
+        background: transparent;
+        border-radius: 6px;
+        color: {COLORS['text_tertiary']};
+        font-weight: 500;
+        font-size: 14px;
+        border: none;
+        padding: 6px 16px;
+    }}
+    .stTabs [aria-selected="true"] {{
+        background: white !important;
+        color: {COLORS['accent_gold']} !important;
+        font-weight: 600;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }}
 
     /* ── 데이터프레임 ── */
-    div[data-testid="stDataFrame"] {{
-        background: {COLORS['bg_panel']};
+    .stDataFrame {{
         border: 1px solid {COLORS['border_subtle']};
-        border-radius: 4px;
+        border-radius: 8px;
+        overflow: hidden;
     }}
 
-    /* ── 알림 박스 ── */
-    div[data-testid="stAlert"] {{
-        background: {COLORS['bg_panel']};
-        border-left: 4px solid {COLORS['accent_gold']};
-        color: {COLORS['text_primary']};
+    /* ── 컨테이너/카드 ── */
+    div[data-testid="stVerticalBlockBorderWrapper"] {{
+        border: 1px solid {COLORS['border_subtle']} !important;
+        border-radius: 8px !important;
+        background: white !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+    }}
+
+    /* ── 진행률/슬라이더 ── */
+    .stProgress > div > div {{
+        background: {COLORS['accent_gold']};
+    }}
+
+    /* ── 알림 ── */
+    .stSuccess {{ background: #ECFDF5; border-color: #059669; color: #065F46; }}
+    .stError   {{ background: #FEF2F2; border-color: #DC2626; color: #991B1B; }}
+    .stWarning {{ background: #FFFBEB; border-color: #D97706; color: #92400E; }}
+    .stInfo    {{ background: #EFF6FF; border-color: #1E40AF; color: #1E3A8A; }}
+
+    /* ── page_link (메뉴) ── */
+    a[data-testid="stPageLink-NavLink"] {{
+        background: transparent;
+        border-radius: 6px;
+        color: {COLORS['text_secondary']} !important;
+        font-size: 14px;
+        font-weight: 500;
+        padding: 6px 10px;
+        margin: 1px 0;
+        transition: all 0.1s;
+    }}
+    a[data-testid="stPageLink-NavLink"]:hover {{
+        background: {COLORS['bg_elevated']};
+        color: {COLORS['accent_gold']} !important;
+    }}
+
+    /* ── 라디오/체크박스 ── */
+    .stRadio label, .stCheckbox label {{
+        color: {COLORS['text_secondary']} !important;
+        font-size: 14px;
     }}
 
     /* ── 구분선 ── */
     hr {{
         border-color: {COLORS['border_subtle']};
+        margin: 16px 0;
     }}
 
-    /* ── 코드 블록 ── */
-    code {{
-        background: {COLORS['bg_deep']} !important;
-        color: {COLORS['accent_gold']} !important;
-        font-family: 'IBM Plex Mono', monospace !important;
-        padding: 2px 6px;
-        border-radius: 2px;
+    /* ── spinner ── */
+    .stSpinner > div {{
+        border-top-color: {COLORS['accent_gold']} !important;
     }}
 
-    /* ── 탭 ── */
-    button[data-baseweb="tab"] {{
-        color: {COLORS['text_tertiary']} !important;
-    }}
-
-    button[data-baseweb="tab"][aria-selected="true"] {{
-        color: {COLORS['accent_gold']} !important;
-        border-bottom-color: {COLORS['accent_gold']} !important;
-    }}
-
-    /* ── Streamlit 기본 헤더/푸터 숨김 ── */
-    #MainMenu {{visibility: hidden;}}
-    footer {{visibility: hidden;}}
-    header {{visibility: hidden;}}
-
-    /* ── 사이드바 자체는 무조건 표시되도록 강제 ──
-       Streamlit 1.57.0이 인라인 style로 height:0을 직접 박아넣어서 사이드바를 숨김.
-       data-testid 셀렉터 + 클래스 셀렉터를 모두 사용해서 어떤 경우에도 적용되도록. */
-    section[data-testid="stSidebar"],
-    section.stSidebar,
-    [class*="stSidebar"] {{
-        display: block !important;
-        visibility: visible !important;
-        width: 244px !important;
-        min-width: 244px !important;
-        max-width: 244px !important;
-        height: auto !important;
-        min-height: 100vh !important;
-        transform: none !important;
-        margin-left: 0 !important;
-        left: 0 !important;
-        position: relative !important;
-    }}
-
-    /* ── 사이드바가 펼친 상태일 때 메인 컨텐츠 위치 보정 ── */
-    section[data-testid="stSidebar"][aria-expanded="true"] ~ section.main {{
-        margin-left: 244px !important;
-    }}
-
-    /* ── 사이드바 토글 버튼(collapsed control) 표시 강제 ── */
-    [data-testid="stSidebarCollapsedControl"] {{
-        display: flex !important;
-        visibility: visible !important;
-    }}
-
-    /* ── 자동 페이지 목록 nav 영역만 정확히 숨김 ──
-       구체적인 태그+testid 조합으로 다른 요소에 영향 없도록. */
-    ul[data-testid="stSidebarNavItems"] {{
-        display: none !important;
-    }}
-    hr[data-testid="stSidebarNavSeparator"] {{
-        display: none !important;
-    }}
-    div[data-testid="stSidebarNavSeparator"] {{
-        display: none !important;
-    }}
-
-    /* ── 상단 브랜드 헤더 (커스텀) ── */
-    .brand-header {{
-        background: rgba(10, 20, 41, 0.95);
-        backdrop-filter: blur(12px);
-        border-bottom: 1px solid {COLORS['border_subtle']};
-        padding: 14px 0;
-        margin: -1.5rem -1rem 1.5rem -1rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding-left: 32px;
-        padding-right: 32px;
-    }}
-
-    .brand-mark {{
-        font-family: 'Noto Serif KR', serif;
-        font-weight: 900;
-        font-size: 20px;
-        color: {COLORS['text_primary']};
-    }}
-
-    .brand-mark::before {{
-        content: '◆';
-        color: {COLORS['accent_gold']};
-        margin-right: 8px;
-        font-size: 13px;
-    }}
-
-    .brand-sub {{
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 11px;
-        color: {COLORS['accent_gold']};
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        margin-left: 8px;
-    }}
-
-    .brand-affiliation {{
-        font-size: 11px;
-        color: {COLORS['text_tertiary']};
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        padding-left: 16px;
-        border-left: 1px solid {COLORS['border_subtle']};
-        margin-left: 16px;
-    }}
-
-    .brand-affiliation strong {{
-        color: {COLORS['text_secondary']};
-        font-weight: 500;
-    }}
-
-    /* ── 페이지 소제목 ── */
-    .page-subtitle {{
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 12px;
-        color: {COLORS['text_tertiary']};
-        letter-spacing: 0.05em;
-        margin-bottom: 24px;
-        margin-top: -8px;
-    }}
-
-    /* ── 패널 카드 ── */
-    .panel {{
-        background: {COLORS['bg_panel']};
-        border: 1px solid {COLORS['border_subtle']};
-        border-radius: 6px;
-        padding: 20px;
-        margin-bottom: 16px;
-    }}
-
-    .panel-title {{
-        font-family: 'Noto Serif KR', serif;
-        font-size: 14px;
-        font-weight: 700;
-        color: {COLORS['text_primary']};
-        padding-bottom: 12px;
-        border-bottom: 1px solid {COLORS['border_subtle']};
-        margin-bottom: 16px;
-    }}
-
-    /* ── 상태 뱃지 ── */
-    .badge {{
-        display: inline-block;
-        padding: 3px 10px;
-        border-radius: 3px;
-        font-family: 'IBM Plex Mono', monospace;
-        font-size: 11px;
-        letter-spacing: 0.05em;
-    }}
-
-    .badge-ok {{
-        background: rgba(94,193,156,0.15);
-        color: {COLORS['status_ok']};
-    }}
-
-    .badge-warning {{
-        background: rgba(212,165,87,0.15);
-        color: {COLORS['status_warning']};
-    }}
-
-    .badge-danger {{
-        background: rgba(212,104,92,0.15);
-        color: {COLORS['status_danger']};
-    }}
+    /* 스크롤바 */
+    ::-webkit-scrollbar {{ width: 6px; height: 6px; }}
+    ::-webkit-scrollbar-track {{ background: {COLORS['bg_panel']}; }}
+    ::-webkit-scrollbar-thumb {{ background: {COLORS['border_strong']}; border-radius: 3px; }}
 
     </style>
     """
@@ -339,24 +231,33 @@ def inject_global_styles():
 
 
 # ============================================================
-# 공통 헤더 컴포넌트
+# 브랜드 헤더
 # ============================================================
 def render_brand_header():
-    """모든 페이지 상단에 표시되는 브랜드 헤더."""
     st.markdown(
-        """
-        <div class="brand-header">
-            <div>
-                <span class="brand-mark">출고 재고 검수 관리</span>
-                <span class="brand-sub">AI VISION</span>
-                <span class="brand-affiliation"><strong>인천대학교 동북아물류대학원</strong></span>
-            </div>
-        </div>
-        """,
+        f'<div style="display:flex;align-items:center;gap:10px;'
+        f'padding-bottom:12px;margin-bottom:4px;'
+        f'border-bottom:1px solid {COLORS["border_subtle"]};">'
+        f'<div style="width:8px;height:8px;border-radius:2px;'
+        f'background:{COLORS["accent_gold"]};"></div>'
+        f'<span style="font-family:\'Inter\',sans-serif;font-size:13px;'
+        f'font-weight:600;color:{COLORS["text_tertiary"]};letter-spacing:0.02em;">'
+        f'출고 재고 검수 관리</span>'
+        f'<span style="font-size:12px;color:{COLORS["text_muted"]};'
+        f'margin-left:4px;">AI Vision System</span>'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
 
+# ============================================================
+# 페이지 부제목
+# ============================================================
 def render_page_subtitle(text: str):
-    """페이지별 영문 서브타이틀."""
-    st.markdown(f'<div class="page-subtitle">{text}</div>', unsafe_allow_html=True)
+    st.markdown(
+        f'<div style="font-size:12px;font-weight:500;'
+        f'color:{COLORS["text_muted"]};letter-spacing:0.05em;'
+        f'text-transform:uppercase;margin-bottom:20px;">'
+        f'{text}</div>',
+        unsafe_allow_html=True,
+    )

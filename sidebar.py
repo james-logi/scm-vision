@@ -41,18 +41,16 @@ def render_sidebar():
         # ── 날짜 / 시간 ──
         now = datetime.now()
         st.markdown(
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;'
-            f'line-height:1.7;margin-bottom:8px;">'
-            f'<div style="font-size:13px;font-weight:700;'
-            f'color:{COLORS["text_primary"]};">'
-            f'{now.strftime("%Y. %m. %d")}</div>'
+            f'<div style="padding:4px 0 10px 0;">'
             f'<div style="font-size:18px;font-weight:700;'
-            f'color:{COLORS["accent_gold"]};letter-spacing:0.05em;">'
-            f'{now.strftime("%H:%M:%S")}</div>'
-            f'<div style="font-size:10px;color:{COLORS["text_muted"]};'
-            f'letter-spacing:0.08em;">'
-            f'{now.strftime("%A").upper()}</div>'
-            f'</div>',
+            f'color:{COLORS["text_primary"]};letter-spacing:-0.01em;">'
+            f'{now.strftime("%H:%M")}'
+            f'<span style="font-size:13px;font-weight:400;'
+            f'color:{COLORS["text_muted"]};margin-left:6px;">'
+            f'{now.strftime("%S")}초</span></div>'
+            f'<div style="font-size:12px;color:{COLORS["text_tertiary"]};margin-top:2px;">'
+            f'{now.strftime("%Y. %m. %d")} ({now.strftime("%a")})'
+            f'</div></div>',
             unsafe_allow_html=True,
         )
 
@@ -60,13 +58,12 @@ def render_sidebar():
 
         # ── 브랜드 ──
         st.markdown(
-            f'<div style="font-family:\'Noto Serif KR\',serif;'
-            f'font-size:15px;font-weight:700;color:{COLORS["text_primary"]};">'
-            f'◆ 출고 재고 검수</div>'
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;'
-            f'font-size:10px;color:{COLORS["accent_gold"]};'
-            f'letter-spacing:0.12em;margin-top:2px;margin-bottom:14px;">'
-            f'AI VISION SYSTEM</div>',
+            f'<div style="padding:4px 0 12px 0;">'
+            f'<div style="font-size:15px;font-weight:700;'
+            f'color:{COLORS["text_primary"]};">출고 재고 검수</div>'
+            f'<div style="font-size:11px;color:{COLORS["text_muted"]};'
+            f'margin-top:2px;letter-spacing:0.05em;">AI Vision System</div>'
+            f'</div>',
             unsafe_allow_html=True,
         )
 
@@ -107,13 +104,13 @@ def render_sidebar():
         safe_page_link("app.py", "🏠 대시보드")
 
         st.markdown(
-            f'<div style="background:{COLORS["bg_panel"]};'
+            f'<div style="background:#EFF6FF;'
             f'border-left:3px solid {COLORS["accent_gold"]};'
             f'border-radius:0 4px 4px 0;padding:8px 10px;margin:10px 0 6px 0;">'
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:9px;'
-            f'color:{COLORS["accent_gold"]};letter-spacing:0.1em;margin-bottom:4px;">'
+            f'<div style="font-size:11px;font-weight:600;'
+            f'color:{COLORS["accent_gold"]};margin-bottom:2px;">'
             f'▶ 발표 순서대로 클릭</div>'
-            f'<div style="font-size:10px;color:{COLORS["text_muted"]};">'
+            f'<div style="font-size:11px;color:{COLORS["text_muted"]};">'
             f'왼쪽 메뉴 = 발표 흐름</div>'
             f'</div>',
             unsafe_allow_html=True,
