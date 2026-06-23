@@ -1,0 +1,6 @@
+worker_id,name,years,shift,line,total_inspections,ng_count,error_rate_pct,peak_ng_hour,top_error_type,risk_level,pattern_label
+W-103,김민수,3,day,LINE-A,475,14,2.95,15,NG_QTY_SHORT,HIGH,afternoon_fatigue
+W-107,이지영,7,day,LINE-A,438,1,0.23,6,NG_CONTAMINATION,LOW,veteran
+W-112,박준호,1,day,LINE-B,432,8,1.85,17,NG_QTY_SHORT,MID,sku_confusion
+W-115,최서연,5,day,LINE-C,456,1,0.22,8,NG_QTY_SHORT,LOW,veteran
+W-201,정도현,2,night,LINE-B,133,3,2.26,4,NG_QTY_SHORT,MID,night_late_fatigue

@@ -1,0 +1,31 @@
+{
+  "crate_id": "CRT-DEMO-001",
+  "scenario_name": "정상 케이스",
+  "scenario_description": "초코크림빵 10개가 정확히 적재된 박스",
+  "expected": {
+    "sku_id": "SKU-001",
+    "sku_name": "초코크림빵",
+    "qty": 10
+  },
+  "inspection_result": {
+    "crate_id": "CRT-DEMO-001",
+    "surface_count": {
+      "SKU-001": 6
+    },
+    "estimated_total": {
+      "SKU-001": 10
+    },
+    "primary_sku": "SKU-001",
+    "primary_count": 10,
+    "expected_match": true,
+    "qty_match": true,
+    "confidence": 94,
+    "contamination_risk": {
+      "detected": false,
+      "suspected_skus": [],
+      "reasoning": "전체 빵이 동일한 시각적 특징(초코 토핑, 크림 충전 흔적)을 보이며 이질적인 빵은 발견되지 않음"
+    },
+    "verdict": "OK",
+    "recommendation": "정상 적재 확인. 출고 가능합니다."
+  }
+}

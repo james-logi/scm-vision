@@ -1,0 +1,31 @@
+{
+  "crate_id": "CRT-DEMO-002",
+  "scenario_name": "수량 부족 케이스",
+  "scenario_description": "초코크림빵 10개여야 하는데 9개만 적재된 박스",
+  "expected": {
+    "sku_id": "SKU-001",
+    "sku_name": "초코크림빵",
+    "qty": 10
+  },
+  "inspection_result": {
+    "crate_id": "CRT-DEMO-002",
+    "surface_count": {
+      "SKU-001": 6
+    },
+    "estimated_total": {
+      "SKU-001": 9
+    },
+    "primary_sku": "SKU-001",
+    "primary_count": 9,
+    "expected_match": true,
+    "qty_match": false,
+    "confidence": 91,
+    "contamination_risk": {
+      "detected": false,
+      "suspected_skus": [],
+      "reasoning": "혼입 빵 없음. SKU 일치하나 수량만 부족"
+    },
+    "verdict": "NG_QTY_SHORT",
+    "recommendation": "1개 부족합니다. 초코크림빵 1개를 추가한 후 재검수해주세요."
+  }
+}

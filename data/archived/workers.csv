@@ -1,0 +1,6 @@
+worker_id,name,years_of_service,shift,recent_30d_error_rate,recent_30d_total_crates,common_error_pattern
+W-103,김민수,3,주간,0.024,1240,오후 피로 누적시 1개 부족 경향
+W-107,이지영,7,주간,0.008,1180,거의 없음 - 베테랑
+W-112,박준호,1,주간,0.041,980,유사 SKU 혼동 (소보로↔땅콩소보로)
+W-115,최서연,5,주간,0.012,1050,거의 없음
+W-201,정도현,2,야간,0.038,920,야간 후반 집중력 저하

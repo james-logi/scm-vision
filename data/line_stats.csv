@@ -1,0 +1,7 @@
+line_no,line_name,shift,total_inspections,ng_count,error_rate_pct,peak_ng_hour,top_error_type,primary_sku,status
+LINE-1,메인 라인 1,day,603,4,0.66,8,NG_CONTAMINATION,SKU-001,정상
+LINE-2,메인 라인 2,day,599,4,0.67,18,NG_QTY_SHORT,SKU-001,정상
+LINE-3,서브 라인 1,day,399,10,2.51,8,NG_QTY_SHORT,SKU-002,주의
+LINE-4,서브 라인 2,day,401,6,1.5,17,NG_QTY_SHORT,SKU-002,정상
+LINE-5,식빵 전용 라인,day,389,4,1.03,12,NG_QTY_SHORT,SKU-002,정상
+LINE-6,야간 라인,night,293,10,3.41,3,NG_QTY_SHORT,SKU-002,주의

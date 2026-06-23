@@ -1,0 +1,35 @@
+{
+  "image_filename": "이미지_0017_20260422043312.jpg",
+  "scenario_name": "데일리식빵 정상 적재 케이스 #2",
+  "scenario_description": "곰곰 데일리식빵 8봉지가 균일하게 적재된 P-Box. 조명 균일성·라벨 가독성 모두 우수.",
+  "ground_truth": {
+    "sku_id": "SKU-002",
+    "sku_name": "곰곰 데일리식빵",
+    "total_units": 8,
+    "arrangement": "2 rows × 4 columns"
+  },
+  "verified_at": "2026-05-24",
+  "verified_by": "Claude (multimodal in chat)",
+  "inspection_result": {
+    "crate_id": "CRT-20260422-002",
+    "surface_count": {
+      "SKU-002": 8
+    },
+    "estimated_total": {
+      "SKU-002": 8
+    },
+    "primary_sku": "SKU-002",
+    "primary_count": 8,
+    "expected_match": true,
+    "qty_match": true,
+    "confidence": 97,
+    "contamination_risk": {
+      "detected": false,
+      "suspected_skus": [],
+      "reasoning": "전체 8봉지가 동일 SKU(SKU-002)로 일관되게 식별됨. 라벨 텍스트와 디자인 모두 매칭."
+    },
+    "verdict": "OK",
+    "recommendation": "정상 적재 확인. 출고 가능합니다.",
+    "_vision_notes": "비닐 반사가 거의 없고 라벨 위치도 일정하여 인식 신뢰도 가장 높음. 시연 데모용 최적 이미지."
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "image_filename": "이미지_0062_20260429065431.jpg",
+  "scenario_name": "햄버거번 정상 적재 케이스 #1",
+  "scenario_description": "버거킹 햄버거번 3포장 × 6개입 = 18개가 정상 적재된 P-Box. 표면이 비교적 잘 정렬됨.",
+  "ground_truth": {
+    "sku_id": "SKU-001",
+    "sku_name": "버거킹 햄버거번",
+    "total_units": 18,
+    "pack_count": 3
+  },
+  "verified_at": "2026-05-24",
+  "verified_by": "Claude (multimodal in chat)",
+  "inspection_result": {
+    "crate_id": "CRT-20260429-001",
+    "surface_count": {
+      "SKU-001": 18
+    },
+    "estimated_total": {
+      "SKU-001": 18
+    },
+    "primary_sku": "SKU-001",
+    "primary_count": 18,
+    "expected_match": true,
+    "qty_match": true,
+    "confidence": 92,
+    "contamination_risk": {
+      "detected": false,
+      "suspected_skus": [],
+      "reasoning": "동일한 시각적 특징(깨 토핑이 있는 둥근 햄버거번, BURGER KING 로고 라벨)이 모든 포장에서 일관되게 관찰됨. 이질적인 빵 발견되지 않음."
+    },
+    "verdict": "OK",
+    "recommendation": "정상 적재 확인. 출고 가능합니다.",
+    "_vision_notes": "비닐 포장의 반사·구김으로 일부 영역의 시야는 제한되나, 3포장 구조와 포장당 6개입 패턴은 명확히 식별 가능."
+  }
+}

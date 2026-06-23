@@ -1,0 +1,35 @@
+{
+  "image_filename": "이미지_0014_20260422043243.jpg",
+  "scenario_name": "데일리식빵 정상 적재 케이스 #1",
+  "scenario_description": "곰곰 데일리식빵 8봉지가 2행 × 4열로 정확하게 적재된 P-Box. 라벨 가독성 매우 우수.",
+  "ground_truth": {
+    "sku_id": "SKU-002",
+    "sku_name": "곰곰 데일리식빵",
+    "total_units": 8,
+    "arrangement": "2 rows × 4 columns"
+  },
+  "verified_at": "2026-05-24",
+  "verified_by": "Claude (multimodal in chat)",
+  "inspection_result": {
+    "crate_id": "CRT-20260422-001",
+    "surface_count": {
+      "SKU-002": 8
+    },
+    "estimated_total": {
+      "SKU-002": 8
+    },
+    "primary_sku": "SKU-002",
+    "primary_count": 8,
+    "expected_match": true,
+    "qty_match": true,
+    "confidence": 98,
+    "contamination_risk": {
+      "detected": false,
+      "suspected_skus": [],
+      "reasoning": "8개 봉지 모두 동일한 '데일리식빵' 라벨, 'gomgom F2' 브랜드명, 동일 색상의 파란 Daily Bread 디자인을 가짐. 이질 SKU 없음."
+    },
+    "verdict": "OK",
+    "recommendation": "정상 적재 확인. 출고 가능합니다.",
+    "_vision_notes": "라벨에서 유통기한 '26.04.29까지' OCR 추출 가능. 향후 유통기한 자동 검증 기능으로 확장 가능한 데이터."
+  }
+}
