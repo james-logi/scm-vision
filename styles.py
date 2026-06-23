@@ -45,6 +45,17 @@ def inject_global_styles():
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
 
+    /* ── Streamlit 자동 생성 페이지 메뉴 완전 숨김 ── */
+    section[data-testid="stSidebarNav"],
+    section[data-testid="stSidebarNav"] ~ div,
+    div[data-testid="stSidebarNavItems"],
+    ul[data-testid="stSidebarNavItems"] {{
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
+    }}
+
     /* ── 배경/본문 ── */
     .stApp {{
         background: #FFFFFF;
@@ -234,18 +245,30 @@ def inject_global_styles():
 # 브랜드 헤더
 # ============================================================
 def render_brand_header():
+    """각 페이지에서 sidebar.render_brand_header()를 호출하면 됩니다.
+    이 함수는 sidebar를 import 못 할 때 폴백용."""
+    from datetime import datetime
+    now = datetime.now()
+    weekdays = ["월", "화", "수", "목", "금", "토", "일"]
+    wd = weekdays[now.weekday()]
     st.markdown(
-        f'<div style="display:flex;align-items:center;gap:10px;'
-        f'padding-bottom:12px;margin-bottom:4px;'
-        f'border-bottom:1px solid {COLORS["border_subtle"]};">'
-        f'<div style="width:8px;height:8px;border-radius:2px;'
-        f'background:{COLORS["accent_gold"]};"></div>'
-        f'<span style="font-family:\'Inter\',sans-serif;font-size:13px;'
-        f'font-weight:600;color:{COLORS["text_tertiary"]};letter-spacing:0.02em;">'
-        f'출고 재고 검수 관리</span>'
-        f'<span style="font-size:12px;color:{COLORS["text_muted"]};'
-        f'margin-left:4px;">AI Vision System</span>'
-        f'</div>',
+        f'<div style="display:flex;justify-content:space-between;align-items:flex-start;'
+        f'padding-bottom:14px;margin-bottom:6px;'
+        f'border-bottom:2px solid {COLORS["border_subtle"]};">'
+        f'<div>'
+        f'<div style="font-size:11px;font-weight:600;color:{COLORS["accent_gold"]};'
+        f'letter-spacing:0.04em;margin-bottom:4px;">AI HACKATHON · SCM CAPSTONE</div>'
+        f'<div style="font-size:17px;font-weight:700;color:{COLORS["text_primary"]};'
+        f'line-height:1.35;">AI 머신비전 기반 실시간 생산·재고 검증 시스템</div>'
+        f'<div style="font-size:12px;color:{COLORS["text_tertiary"]};margin-top:4px;">'
+        f'인천대학교 동북아물류대학원 &nbsp;·&nbsp; 발표자 정승현</div>'
+        f'</div>'
+        f'<div style="text-align:right;flex-shrink:0;">'
+        f'<div style="font-size:26px;font-weight:700;color:{COLORS["text_primary"]};'
+        f'line-height:1;">{now.strftime("%H:%M")}</div>'
+        f'<div style="font-size:11px;color:{COLORS["text_muted"]};margin-top:4px;">'
+        f'{now.strftime("%Y.%m.%d")} ({wd})</div>'
+        f'</div></div>',
         unsafe_allow_html=True,
     )
 
