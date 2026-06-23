@@ -1,11 +1,14 @@
 """
-sidebar.py — 사이드바 렌더링 공용 모듈 v2
-변경: MODE 토글 삭제, 날짜/시간 표시 추가, 메뉴 프로세스 순서로 재편
+sidebar.py — 사이드바 + 상단 헤더 v3
+- 프로젝트 정보 (제목/학교/발표자)
+- 날짜/시간 우측 상단 고정
+- 발표 순서 메뉴
+- Streamlit 자동 생성 메뉴 숨김
 """
 
 import streamlit as st
 from datetime import datetime
-from styles import COLORS
+from styles import COLORS, render_brand_header as _base_header
 
 
 SITE_CONFIG = {
@@ -15,67 +18,125 @@ SITE_CONFIG = {
 
 
 def ensure_session_state():
-    """세션 상태 초기화 — 모든 페이지 최상단에서 호출."""
     if "site" not in st.session_state:
         st.session_state.site = "suwon"
-    # mode는 항상 admin으로 고정 (모드 구분 폐지)
     st.session_state.mode = "admin"
 
 
 def safe_page_link(path: str, label: str):
-    """page_link 실패 시 텍스트로 폴백"""
     try:
         st.page_link(path, label=label)
     except Exception:
         st.markdown(
-            f'<div style="padding:4px 0;color:{COLORS["text_secondary"]};'
-            f'font-size:13px;">▸ {label}</div>',
+            f'<div style="padding:4px 8px;color:{COLORS["text_secondary"]};'
+            f'font-size:14px;">▸ {label}</div>',
             unsafe_allow_html=True,
         )
 
 
-def render_sidebar():
-    """공용 사이드바 렌더링 — app.py + 모든 페이지에서 동일한 사이드바."""
-    with st.sidebar:
+def render_brand_header():
+    """상단 헤더 — 프로젝트 정보 + 우측 날짜/시간"""
+    now = datetime.now()
+    weekdays = ["월", "화", "수", "목", "금", "토", "일"]
+    wd = weekdays[now.weekday()]
 
-        # ── 날짜 / 시간 ──
-        now = datetime.now()
+    st.markdown(
+        f'<div style="display:flex;justify-content:space-between;align-items:flex-start;'
+        f'padding-bottom:14px;margin-bottom:6px;'
+        f'border-bottom:2px solid {COLORS["border_subtle"]};">'
+
+        # 왼쪽: 프로젝트 정보
+        f'<div>'
+        f'<div style="font-size:11px;font-weight:600;color:{COLORS["accent_gold"]};'
+        f'letter-spacing:0.04em;margin-bottom:4px;">'
+        f'AI HACKATHON · SCM CAPSTONE</div>'
+        f'<div style="font-size:17px;font-weight:700;color:{COLORS["text_primary"]};'
+        f'line-height:1.35;letter-spacing:-0.01em;">'
+        f'AI 머신비전 기반 실시간<br>생산·재고 검증 시스템</div>'
+        f'<div style="font-size:12px;color:{COLORS["text_tertiary"]};margin-top:6px;'
+        f'line-height:1.6;">'
+        f'인천대학교 동북아물류대학원<br>'
+        f'발표자 &nbsp;정승현'
+        f'</div></div>'
+
+        # 오른쪽: 날짜/시간
+        f'<div style="text-align:right;flex-shrink:0;">'
+        f'<div style="font-size:26px;font-weight:700;color:{COLORS["text_primary"]};'
+        f'letter-spacing:-0.02em;line-height:1;">'
+        f'{now.strftime("%H:%M")}</div>'
+        f'<div style="font-size:11px;color:{COLORS["text_muted"]};margin-top:4px;">'
+        f'{now.strftime("%Y.%m.%d")} ({wd})</div>'
+        f'</div>'
+
+        f'</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def render_sidebar():
+    # Streamlit 자동 생성 메뉴 숨기기 + 사이드바 스타일
+    st.markdown(
+        """<style>
+        /* Streamlit 자동 생성 페이지 목록 숨김 */
+        section[data-testid="stSidebarNav"] { display: none !important; }
+        section[data-testid="stSidebarNav"] + div { display: none !important; }
+
+        /* 사이드바 전체 스타일 */
+        section[data-testid="stSidebar"] {
+            background: #F8FAFC;
+            border-right: 1px solid #E2E8F0;
+            min-width: 220px !important;
+        }
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 1rem !important;
+        }
+        /* 메뉴 링크 */
+        a[data-testid="stPageLink-NavLink"] {
+            border-radius: 6px;
+            padding: 6px 10px !important;
+            font-size: 14px !important;
+            font-weight: 500;
+            color: #334155 !important;
+            margin: 1px 0;
+            display: block;
+        }
+        a[data-testid="stPageLink-NavLink"]:hover {
+            background: #EFF6FF !important;
+            color: #1E40AF !important;
+        }
+        </style>""",
+        unsafe_allow_html=True,
+    )
+
+    with st.sidebar:
+        # ── 프로젝트 정보 ──
         st.markdown(
-            f'<div style="padding:4px 0 10px 0;">'
-            f'<div style="font-size:18px;font-weight:700;'
-            f'color:{COLORS["text_primary"]};letter-spacing:-0.01em;">'
-            f'{now.strftime("%H:%M")}'
-            f'<span style="font-size:13px;font-weight:400;'
-            f'color:{COLORS["text_muted"]};margin-left:6px;">'
-            f'{now.strftime("%S")}초</span></div>'
-            f'<div style="font-size:12px;color:{COLORS["text_tertiary"]};margin-top:2px;">'
-            f'{now.strftime("%Y. %m. %d")} ({now.strftime("%a")})'
+            f'<div style="padding:8px 4px 12px 4px;">'
+            f'<div style="font-size:11px;font-weight:600;'
+            f'color:{COLORS["accent_gold"]};letter-spacing:0.04em;'
+            f'margin-bottom:6px;">SCM CAPSTONE</div>'
+            f'<div style="font-size:14px;font-weight:700;'
+            f'color:{COLORS["text_primary"]};line-height:1.4;">'
+            f'AI 머신비전 기반<br>생산·재고 검증 시스템</div>'
+            f'<div style="font-size:11px;color:{COLORS["text_tertiary"]};'
+            f'margin-top:6px;line-height:1.7;">'
+            f'인천대학교 동북아물류대학원<br>'
+            f'발표자 · 정승현'
             f'</div></div>',
             unsafe_allow_html=True,
         )
 
-        st.markdown("---")
-
-        # ── 브랜드 ──
-        st.markdown(
-            f'<div style="padding:4px 0 12px 0;">'
-            f'<div style="font-size:15px;font-weight:700;'
-            f'color:{COLORS["text_primary"]};">출고 재고 검수</div>'
-            f'<div style="font-size:11px;color:{COLORS["text_muted"]};'
-            f'margin-top:2px;letter-spacing:0.05em;">AI Vision System</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
+        st.divider()
 
         # ── 사이트 선택 ──
         st.markdown(
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;'
-            f'color:{COLORS["text_muted"]};letter-spacing:0.08em;margin-bottom:4px;">'
-            f'SITE</div>',
+            f'<div style="font-size:11px;font-weight:600;'
+            f'color:{COLORS["text_muted"]};letter-spacing:0.06em;'
+            f'margin-bottom:4px;">SITE</div>',
             unsafe_allow_html=True,
         )
         site_choice = st.selectbox(
-            "공장 선택",
+            "공장",
             options=["suwon", "busan"],
             format_func=lambda x: SITE_CONFIG[x]["name"],
             index=["suwon", "busan"].index(st.session_state.site),
@@ -85,77 +146,52 @@ def render_sidebar():
             st.session_state.site = site_choice
             st.rerun()
 
+        st.divider()
+
+        # ── 발표 메뉴 ──
+        safe_page_link("app.py", "🏠  대시보드")
+
+        st.markdown(
+            f'<div style="font-size:11px;font-weight:600;'
+            f'color:{COLORS["text_muted"]};letter-spacing:0.06em;'
+            f'margin:10px 0 4px 0;">핵심 메시지</div>',
+            unsafe_allow_html=True,
+        )
+        safe_page_link("pages/0_KEY_Points.py", "★  재고 불일치 시나리오 vs 재고 관리 도입")
+
+        st.markdown(
+            f'<div style="font-size:11px;font-weight:600;'
+            f'color:{COLORS["text_muted"]};letter-spacing:0.06em;'
+            f'margin:10px 0 4px 0;">프로세스 흐름</div>',
+            unsafe_allow_html=True,
+        )
+        safe_page_link("pages/1_Production.py", "1.  생산 라인 현황")
+        safe_page_link("pages/6_Vision_Test.py", "2.  비전 검사  🔬")
+        safe_page_link("pages/2_Inventory.py",   "3.  재고 현황")
+        safe_page_link("pages/1_Inspection.py",  "4.  출고 검수")
+        safe_page_link("pages/3_Dispatch.py",    "5.  출고 처리")
+
+        st.markdown(
+            f'<div style="font-size:11px;font-weight:600;'
+            f'color:{COLORS["text_muted"]};letter-spacing:0.06em;'
+            f'margin:10px 0 4px 0;">분석 · 인사이트</div>',
+            unsafe_allow_html=True,
+        )
+        safe_page_link("pages/7_Monitor.py",     "6.  검사 이력")
+        safe_page_link("pages/4_SCM_Insight.py", "7.  SCM 인사이트  ★")
+
+        st.divider()
+
+        safe_page_link("pages/5_Tech_Choice.py", "시스템 정보")
+
         # ── 세션 정보 ──
         cfg = SITE_CONFIG[st.session_state.site]
         st.markdown(
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;'
-            f'font-size:10px;line-height:1.8;margin-top:8px;">'
-            f'<span style="color:{COLORS["text_muted"]};">SHIFT</span> '
-            f'<span style="color:{COLORS["text_secondary"]};">{cfg["shift"]}</span><br>'
-            f'<span style="color:{COLORS["text_muted"]};">SESSION</span> '
-            f'<span style="color:{COLORS["text_secondary"]};">{cfg["session"]}</span>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-
-        st.markdown("---")
-
-        # ── 메뉴 ──
-        safe_page_link("app.py", "🏠 대시보드")
-
-        st.markdown(
-            f'<div style="background:#EFF6FF;'
-            f'border-left:3px solid {COLORS["accent_gold"]};'
-            f'border-radius:0 4px 4px 0;padding:8px 10px;margin:10px 0 6px 0;">'
-            f'<div style="font-size:11px;font-weight:600;'
-            f'color:{COLORS["accent_gold"]};margin-bottom:2px;">'
-            f'▶ 발표 순서대로 클릭</div>'
-            f'<div style="font-size:11px;color:{COLORS["text_muted"]};">'
-            f'왼쪽 메뉴 = 발표 흐름</div>'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
-
-        safe_page_link("pages/0_KEY_Points.py",   "★  KEY Points — 핵심 메시지")
-
-        st.markdown(
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;'
-            f'color:{COLORS["text_muted"]};letter-spacing:0.08em;'
-            f'margin-top:8px;margin-bottom:4px;">PROCESS  ↓</div>',
-            unsafe_allow_html=True,
-        )
-        safe_page_link("pages/1_Production.py",  "1.  생산 라인 현황")
-        safe_page_link("pages/6_Vision_Test.py",  "2.  비전 검사  ← 시연")
-        safe_page_link("pages/2_Inventory.py",    "3.  재고 현황")
-        safe_page_link("pages/1_Inspection.py",   "4.  출고 검수")
-        safe_page_link("pages/3_Dispatch.py",     "5.  출고 처리")
-
-        st.markdown(
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;'
-            f'color:{COLORS["text_muted"]};letter-spacing:0.08em;'
-            f'margin-top:8px;margin-bottom:4px;">ANALYSIS  ↓</div>',
-            unsafe_allow_html=True,
-        )
-        safe_page_link("pages/7_Monitor.py",      "6.  검사 이력")
-        safe_page_link("pages/4_SCM_Insight.py",  "7.  SCM 인사이트  ← 핵심")
-
-        st.markdown(
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;'
-            f'color:{COLORS["text_muted"]};letter-spacing:0.08em;'
-            f'margin-top:10px;margin-bottom:4px;">INFO</div>',
-            unsafe_allow_html=True,
-        )
-        safe_page_link("pages/5_Tech_Choice.py",  "시스템 정보")
-
-        st.markdown("---")
-
-        # ── 푸터 ──
-        st.markdown(
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:9px;'
-            f'color:{COLORS["text_muted"]};letter-spacing:0.05em;line-height:1.6;">'
-            f'INCHEON NATIONAL UNIVERSITY<br>'
-            f'GRADUATE SCHOOL OF LOGISTICS<br>'
-            f'POWERED BY CLAUDE'
+            f'<div style="font-size:10px;color:{COLORS["text_muted"]};'
+            f'line-height:1.8;margin-top:8px;padding:8px;'
+            f'background:#F1F5F9;border-radius:6px;">'
+            f'{cfg["shift"]}<br>'
+            f'SESSION {cfg["session"]}'
             f'</div>',
             unsafe_allow_html=True,
         )
