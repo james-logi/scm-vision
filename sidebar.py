@@ -129,6 +129,7 @@ def render_sidebar():
         )
         safe_page_link("pages/0_KEY_Points.py", "생산·재고 손실 관리")
         safe_page_link("pages/0_Flow.py",       "물류 흐름도  🏭")
+        safe_page_link("pages/0_Flow.py",       "물류 흐름도  🏭")
 
         st.markdown(
             f'<div style="font-size:11px;font-weight:600;'
