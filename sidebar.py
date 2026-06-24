@@ -128,26 +128,6 @@ def render_sidebar():
 
         st.divider()
 
-        # ── 사이트 선택 ──
-        st.markdown(
-            f'<div style="font-size:11px;font-weight:600;'
-            f'color:{COLORS["text_muted"]};letter-spacing:0.06em;'
-            f'margin-bottom:4px;">SITE</div>',
-            unsafe_allow_html=True,
-        )
-        site_choice = st.selectbox(
-            "공장",
-            options=["suwon", "busan"],
-            format_func=lambda x: SITE_CONFIG[x]["name"],
-            index=["suwon", "busan"].index(st.session_state.site),
-            label_visibility="collapsed",
-        )
-        if site_choice != st.session_state.site:
-            st.session_state.site = site_choice
-            st.rerun()
-
-        st.divider()
-
         # ── 발표 메뉴 ──
         safe_page_link("app.py", "🏠  대시보드")
 
@@ -183,15 +163,3 @@ def render_sidebar():
         st.divider()
 
         safe_page_link("pages/5_Tech_Choice.py", "시스템 정보")
-
-        # ── 세션 정보 ──
-        cfg = SITE_CONFIG[st.session_state.site]
-        st.markdown(
-            f'<div style="font-size:10px;color:{COLORS["text_muted"]};'
-            f'line-height:1.8;margin-top:8px;padding:8px;'
-            f'background:#F1F5F9;border-radius:6px;">'
-            f'{cfg["shift"]}<br>'
-            f'SESSION {cfg["session"]}'
-            f'</div>',
-            unsafe_allow_html=True,
-        )
