@@ -9,6 +9,7 @@ from datetime import timedelta
 from styles import inject_global_styles, render_page_subtitle, COLORS
 from sidebar import ensure_session_state, render_sidebar, render_brand_header
 from sku_registry import SkuRegistry
+from data_config import DAILY_PRODUCTION_EA, PBOX_UNIT, TOTAL_SKU_TYPES, get_sku_allocation_pbox, calc_savings
 
 st.set_page_config(page_title="재고 현황 | SCM", page_icon="◆",
                    layout="wide", initial_sidebar_state="expanded")

@@ -9,6 +9,7 @@ from datetime import timedelta
 from styles import inject_global_styles, COLORS
 from sku_registry import SkuRegistry
 from sidebar import ensure_session_state, render_sidebar, render_brand_header
+from data_config import TOTAL_SKU_TYPES, DAILY_PRODUCTION_EA, AVG_PRICE_PER_EA, PBOX_UNIT, calc_savings
 
 st.set_page_config(
     page_title="AI 머신비전 기반 실시간 생산·재고 검증 시스템",
@@ -199,8 +200,8 @@ try:
     kpi(k2, f"{acc:.2f}",      "%",  "비전 정확도",  "AI Vision 판정",        COLORS["accent_gold"])
     kpi(k3, f"{ng:,}",         "건", "NG 차단",      "출고 불가 차단",        COLORS["status_warning"])
     kpi(k4, f"{shortage:,}",   "건", "재고 부족분",  "주문 미충족 가능",      COLORS["status_danger"])
-    kpi(k5, f"{ng*10000:,}",   "원", "추정 절감",    "NG 1건당 1만원 기준",  COLORS["status_ok"])
-    kpi(k6, f"{sku_count}",    "종", "등록 SKU",     "비전 인식 상품",        COLORS["text_secondary"])
+    kpi(k5, f"{calc_savings(ng):,}", "원", "추정 절감", f"NG 1건당 {PBOX_UNIT*AVG_PRICE_PER_EA:,}원 기준", COLORS["status_ok"])
+    kpi(k6, f"{sku_count}/{TOTAL_SKU_TYPES}", "종", "등록 SKU", f"전체 {TOTAL_SKU_TYPES}종 중 등록", COLORS["text_secondary"])
 
 except Exception as e:
     st.info(f"데이터 로드 중... ({e})")
