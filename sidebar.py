@@ -53,10 +53,10 @@ def render_brand_header():
         f'인천대학교 동북아물류대학원 &nbsp;·&nbsp; 발표자 정승현</div>'
         f'</div>'
         f'<div style="text-align:right;flex-shrink:0;">'
-        f'<div style="font-size:26px;font-weight:700;color:{COLORS["text_primary"]};'
-        f'line-height:1;">{now.strftime("%H:%M")}</div>'
-        f'<div style="font-size:11px;color:{COLORS["text_muted"]};margin-top:4px;">'
-        f'{now.strftime("%Y.%m.%d")} ({wd})</div>'
+        f'<div style="font-size:15px;font-weight:600;color:{COLORS["text_primary"]};'
+        f'line-height:1.5;">{now.strftime("%Y년 %m월 %d일")}</div>'
+        f'<div style="font-size:12px;color:{COLORS["text_muted"]};margin-top:2px;">'
+        f'{now.strftime("%A")}</div>'
         f'</div>'
         f'</div>',
         unsafe_allow_html=True,
