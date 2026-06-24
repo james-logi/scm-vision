@@ -68,28 +68,18 @@ def render_sidebar():
     st.markdown(
         """<style>
         /* Streamlit 자동 생성 페이지 목록 숨김 */
-        section[data-testid="stSidebarNav"] { display: none !important; }
-        section[data-testid="stSidebarNav"] + div { display: none !important; }
+        section[data-testid="stSidebarNav"],
+        section[data-testid="stSidebarNav"] ~ div {
+            display: none !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
 
-        /* 사이드바 상단 여백 완전 제거 */
+        /* 사이드바 상단 여백 */
         section[data-testid="stSidebar"] > div:first-child {
-            padding-top: 0 !important;
-            margin-top: 0 !important;
-        }
-        section[data-testid="stSidebar"] .block-container {
-            padding-top: 0.4rem !important;
-            margin-top: 0 !important;
-        }
-        [data-testid="stSidebarContent"] {
-            padding-top: 0 !important;
+            padding-top: 0.5rem !important;
         }
 
-        /* 사이드바 전체 스타일 */
-        section[data-testid="stSidebar"] {
-            background: #F8FAFC;
-            border-right: 1px solid #E2E8F0;
-            min-width: 220px !important;
-        }
         /* 메뉴 링크 */
         a[data-testid="stPageLink-NavLink"] {
             border-radius: 6px;

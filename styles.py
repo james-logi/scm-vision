@@ -138,17 +138,13 @@ def inject_global_styles():
         background: #F8FAFC;
         border-right: 1px solid #E2E8F0;
     }}
-    section[data-testid="stSidebar"] > div {{
-        padding-top: 0 !important;
-        margin-top: 0 !important;
+    /* 상단 여백 제거 */
+    section[data-testid="stSidebar"] > div:first-child {{
+        padding-top: 0.5rem !important;
     }}
     section[data-testid="stSidebar"] .block-container {{
         padding-top: 0.5rem !important;
         padding-bottom: 1rem !important;
-        margin-top: 0 !important;
-    }}
-    section[data-testid="stSidebar"] .stVerticalBlock {{
-        gap: 0 !important;
     }}
     section[data-testid="stSidebar"] p,
     section[data-testid="stSidebar"] span,
