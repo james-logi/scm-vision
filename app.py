@@ -87,42 +87,79 @@ st.markdown("")
 st.markdown("---")
 
 # ─────────────────────────────────────────────
-# 발표 순서 (최신 페이지 구성 반영)
+# 발표 순서 (사이드바 메뉴와 동일하게)
 # ─────────────────────────────────────────────
 st.markdown(
     f'<div style="font-size:11px;font-weight:600;color:{COLORS["text_muted"]};'
-    f'letter-spacing:0.08em;margin-bottom:10px;">'
+    f'letter-spacing:0.08em;margin-bottom:12px;">'
     f'PRESENTATION FLOW · 왼쪽 메뉴를 순서대로 클릭하세요</div>',
     unsafe_allow_html=True)
 
-steps = [
-    ("★", "물류 흐름 손실 관리",   "AS-IS 현재 문제 상황 인지\nTO-BE AI Vision 검수",   COLORS["accent_gold"],    True),
-    ("1", "생산 라인 현황",          "LINE 1~10 P-Box 생산량\nNG율 · 라인별 상태 카드",   COLORS["accent_cobalt"],  False),
-    ("2", "비전 검사  🔬",           "이미지 업로드 → AI 실시간 분석\n폴더 자동스캔 지원",  COLORS["accent_gold"],    True),
-    ("3", "재고 검수",               "−2일~+5일 검수 윈도우\nOK 판정 → 재고 반영",         COLORS["accent_cobalt"],  False),
-    ("4", "재고 현황",               "검수 OK 수량 기반 재고\n생산계획/재고/출고예정/부족분", COLORS["text_secondary"], False),
-    ("5", "출고 처리",               "일자별 출고 완료/예정 계획\n매장·상품별 출고 현황",    COLORS["text_secondary"], False),
-    ("6", "검사 이력",               "누적 성과 차트 (EA/Case)\n상품별 일별 수량 추이",     COLORS["status_ok"],      False),
-    ("7", "SCM 인사이트  ★",        "채찍효과 이론 연결\nClaude 자동 추론 + 65%→1.42%",  COLORS["accent_gold"],    True),
-]
+def flow_card(col, num, title, desc, color):
+    lines = desc.split("\n")
+    col.markdown(
+        f'<div style="background:{COLORS["bg_panel"]};'
+        f'border:1px solid {COLORS["border_subtle"]};'
+        f'border-top:3px solid {color};border-radius:8px;'
+        f'padding:16px;text-align:center;min-height:110px;">'
+        f'<div style="font-size:20px;font-weight:900;color:{color};'
+        f'line-height:1;margin-bottom:6px;">{num}</div>'
+        f'<div style="font-size:14px;font-weight:700;color:{COLORS["text_primary"]};'
+        f'margin-bottom:6px;">{title}</div>'
+        f'<div style="font-size:12px;color:{COLORS["text_muted"]};line-height:1.6;">'
+        f'{"<br>".join(lines)}</div>'
+        f'</div>', unsafe_allow_html=True)
 
-row1, row2 = steps[:4], steps[4:]
-for row in [row1, row2]:
-    cols = st.columns(4)
-    for col, (num, title, desc, color, star) in zip(cols, row):
-        border = f'border:2px solid {color}' if star else f'border:1px solid {COLORS["border_subtle"]}'
-        bg = "#FFFBEB" if color == COLORS["accent_gold"] and star else COLORS["bg_panel"]
-        lines = desc.split("\n")
-        desc_html = "<br>".join(lines)
-        col.markdown(
-            f'<div style="background:{bg};{border};border-radius:8px;'
-            f'padding:16px;text-align:center;min-height:110px;">'
-            f'<div style="font-size:22px;font-weight:900;color:{color};line-height:1;margin-bottom:6px;">{num}</div>'
-            f'<div style="font-size:14px;font-weight:700;color:{COLORS["text_primary"]};margin-bottom:6px;">{title}</div>'
-            f'<div style="font-size:12px;color:{COLORS["text_muted"]};line-height:1.6;">{desc_html}</div>'
-            f'</div>', unsafe_allow_html=True)
-    st.markdown("")
+# 핵심 메시지 그룹
+st.markdown(
+    f'<div style="font-size:11px;color:{COLORS["text_muted"]};margin-bottom:6px;">'
+    f'핵심 메시지</div>', unsafe_allow_html=True)
+r0 = st.columns(2)
+flow_card(r0[0], "★", "생산·재고 손실 관리",
+    "AS-IS 현재 문제 상황 인지\nTO-BE AI Vision 검수",
+    COLORS["accent_gold"])
+flow_card(r0[1], "🏭", "물류 흐름도",
+    "생산→작업실→물류동\n휴머노이드 로봇 애니메이션",
+    COLORS["accent_cobalt"])
 
+st.markdown("")
+
+# 프로세스 흐름 그룹
+st.markdown(
+    f'<div style="font-size:11px;color:{COLORS["text_muted"]};margin-bottom:6px;">'
+    f'프로세스 흐름</div>', unsafe_allow_html=True)
+r1 = st.columns(5)
+flow_card(r1[0], "1", "생산 라인 현황",
+    "LINE 1~10 P-Box 생산량\nNG율 · 라인별 상태 카드",
+    COLORS["accent_cobalt"])
+flow_card(r1[1], "2", "비전 검사  🔬",
+    "이미지 업로드 → AI 분석\n실시간 OK/NG 판정",
+    COLORS["accent_cobalt"])
+flow_card(r1[2], "3", "재고 검수",
+    "−2일~+5일 검수 윈도우\nOK 판정 → 재고 반영",
+    COLORS["accent_cobalt"])
+flow_card(r1[3], "4", "재고 현황",
+    "주문기반 생산 · 부족분\n생산계획/재고/출고예정",
+    COLORS["accent_cobalt"])
+flow_card(r1[4], "5", "출고 처리",
+    "일자별 출고 완료/예정\n매장·상품별 출고 현황",
+    COLORS["accent_cobalt"])
+
+st.markdown("")
+
+# 분석·인사이트 그룹
+st.markdown(
+    f'<div style="font-size:11px;color:{COLORS["text_muted"]};margin-bottom:6px;">'
+    f'분석 · 인사이트</div>', unsafe_allow_html=True)
+r2 = st.columns(2)
+flow_card(r2[0], "6", "검사 이력",
+    "누적 성과 차트 (EA/Case)\n상품별 일별 수량 추이",
+    COLORS["status_ok"])
+flow_card(r2[1], "7", "SCM 인사이트",
+    "채찍효과 이론 연결\nClaude 자동 추론 + 65%→1.42%",
+    COLORS["status_ok"])
+
+st.markdown("")
 st.markdown("---")
 
 # ─────────────────────────────────────────────
@@ -167,25 +204,6 @@ try:
 
 except Exception as e:
     st.info(f"데이터 로드 중... ({e})")
-
-st.markdown("")
-
-# ─────────────────────────────────────────────
-# 핵심 메시지
-# ─────────────────────────────────────────────
-st.markdown(
-    f'<div style="background:#EFF6FF;border:1px solid {COLORS["accent_cobalt"]};'
-    f'border-radius:8px;padding:20px 28px;text-align:center;">'
-    f'<div style="font-size:14px;font-weight:700;color:{COLORS["accent_cobalt"]};'
-    f'margin-bottom:8px;">핵심 가치 제안</div>'
-    f'<div style="font-size:16px;font-weight:700;color:{COLORS["text_primary"]};line-height:1.7;">'
-    f'P-Box 단위 변환 지점에 AI Vision 검수 게이트를 설치하여<br>'
-    f'<span style="color:{COLORS["status_warning"]};">IRI 65%</span> 수준의 재고 불일치를 '
-    f'<span style="color:{COLORS["status_ok"]};">1.42%</span>로 개선하고<br>'
-    f'NG {ng if "ng" in dir() else 38}건을 차단하여 '
-    f'<span style="color:{COLORS["accent_gold"]};font-weight:900;">불량 출고를 원천 차단</span>합니다.'
-    f'</div></div>',
-    unsafe_allow_html=True)
 
 st.markdown("")
 st.markdown(
