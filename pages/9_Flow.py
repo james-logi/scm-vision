@@ -563,7 +563,7 @@ function animate(){
   });
 
   // ── Figure AI 로봇: 작업실 중간 위치 ──
-  const robotX = (Z1+Z2)/2;
+  //const robotX = (Z1+Z2)/2;
   const phase1=(t*0.012)%(Math.PI*2);
   const phase2=(t*0.012+Math.PI)%(Math.PI*2);
   drawFigureRobot(robotX, CY1-85, phase1);
