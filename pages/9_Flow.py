@@ -483,14 +483,31 @@ function drawBadge(x,y,ok){
 // ── 아이템 데이터 ──
 const breads1=[];
 const breads2=[];
-const pboxes =[];
+const pboxes1=[];
+const pboxes2=[];
 
-for(let i=0;i<7;i++){
-  breads1.push({ x: i*(W*0.25/5)+20, spd:1.3+Math.random()*0.3 });
-  breads2.push({ x: i*(W*0.25/5)+30, spd:1.1+Math.random()*0.3 });
+// 빵: 생산동에서 로봇 위치(Z1)까지만 이동
+for(let i=0;i<6;i++){
+  breads1.push({ x: i*(Z1/5)+20, spd:1.3+Math.random()*0.3 });
+  breads2.push({ x: i*(Z1/5)+30, spd:1.1+Math.random()*0.3 });
 }
+// P-Box: 로봇 위치(Z1) 이후 ~ AI Vision(Z3)까지 이동
 for(let i=0;i<4;i++){
-  pboxes.push({ x: W*0.44+i*(W*0.05+20), spd:0.9 });
+  pboxes1.push({ x: Z1 + i*(( Z3-Z1)/4), spd:0.9 });
+  pboxes2.push({ x: Z1 + i*(( Z3-Z1)/4)+15, spd:0.85 });
+}
+
+// 전환 파티클 (빵→박스 효과)
+const particles=[];
+function spawnParticle(x,y,color){
+  for(let i=0;i<4;i++){
+    particles.push({
+      x,y,
+      vx:(Math.random()-0.5)*3,
+      vy:-Math.random()*3,
+      life:30, color
+    });
+  }
 }
 
 function animate(){
@@ -502,40 +519,77 @@ function animate(){
   drawConveyor(CY1);
   drawConveyor(CY2);
 
-  // 빵 이동 (컨베이어1 - 생산~작업실)
+  // ── 빵: 생산동 → 로봇 앞(Z1-20)까지만 ──
   breads1.forEach(b=>{
-    b.x+=b.spd;
-    if(b.x>Z2-10) b.x=-10;
-    if(b.x>CX1 && b.x<Z2)
-      drawBread(b.x, CY1-12, 0);
+    b.x += b.spd;
+    if(b.x > Z1-20){
+      // 로봇 앞에서 사라지며 파티클 생성
+      spawnParticle(b.x, CY1-12, '#F97316');
+      b.x = -10;
+    }
+    if(b.x > 0) drawBread(b.x, CY1-12, 0);
   });
-  // 빵 이동 (컨베이어2)
   breads2.forEach(b=>{
-    b.x+=b.spd;
-    if(b.x>Z2-10) b.x=-10;
-    if(b.x>CX1 && b.x<Z2)
-      drawBread(b.x, CY2-12, 1);
+    b.x += b.spd;
+    if(b.x > Z1-20){
+      spawnParticle(b.x, CY2-12, '#16A34A');
+      b.x = -10;
+    }
+    if(b.x > 0) drawBread(b.x, CY2-12, 1);
   });
 
-  // P-Box 이동 (작업실 이후)
-  pboxes.forEach((b,i)=>{
-    b.x+=b.spd;
-    if(b.x>Z3-10) b.x=Z2+5;
-    drawPBox(b.x, CY1-26, 32,24, true);
-    drawPBox(b.x+15, CY2-26, 32,24, true);
+  // ── 파티클 ──
+  for(let i=particles.length-1;i>=0;i--){
+    const p=particles[i];
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.15; p.life--;
+    ctx.globalAlpha=p.life/30;
+    ctx.fillStyle=p.color;
+    ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=1;
+    if(p.life<=0) particles.splice(i,1);
+  }
+
+  // ── P-Box: 로봇 위치(Z1)부터 ~ AI Vision(Z3) ──
+  pboxes1.forEach(b=>{
+    b.x += b.spd;
+    if(b.x > Z3-10) b.x = Z1;
+    drawPBox(b.x, CY1-26, 32, 24, true);
+  });
+  pboxes2.forEach(b=>{
+    b.x += b.spd;
+    if(b.x > Z3-10) b.x = Z1;
+    drawPBox(b.x, CY2-26, 32, 24, true);
   });
 
-  // Figure AI 로봇 (라인1)
+  // ── Figure AI 로봇: Z1 바로 앞(전환 지점) ──
+  // 로봇 발이 컨베이어 위, 팔이 아래 컨베이어 방향으로 움직임
   const phase1=(t*0.012)%(Math.PI*2);
-  drawFigureRobot(Z1+(Z2-Z1)*0.38, CY1-70, phase1);
-
-  // Figure AI 로봇 (라인2)
   const phase2=(t*0.012+Math.PI)%(Math.PI*2);
-  drawFigureRobot(Z1+(Z2-Z1)*0.62, CY2-70, phase2);
+  // 라인1 로봇: Z1에서 왼쪽(빵쪽)을 향해 팔을 뻗음
+  drawFigureRobot(Z1-10, CY1-85, phase1);
+  // 라인2 로봇: Z1에서 왼쪽을 향해
+  drawFigureRobot(Z1-10, CY2-85, phase2);
 
-  // 비어있는 P-Box (작업실)
-  drawPBox(Z1+30, CY1-60, 32,24, false);
-  drawPBox(Z1+30, CY2-60, 32,24, false);
+  // ── 전환 지점 빈 P-Box (로봇이 채우는 중) ──
+  // 채워지는 정도가 시간에 따라 변함
+  const fillCycle = (Math.sin(t*0.04)+1)/2; // 0~1
+  drawPBox(Z1+5, CY1-26, 32, 24, fillCycle>0.4);
+  drawPBox(Z1+5, CY2-26, 32, 24, fillCycle>0.6);
+
+  // ── 전환 라벨 ──
+  ctx.save();
+  ctx.textAlign='center';
+  ctx.font='bold 10px Segoe UI';
+  ctx.fillStyle='rgba(252,211,77,0.8)';
+  ctx.fillText('EA→Case', Z1, CY1-95);
+  ctx.fillText('EA→Case', Z1, CY2-95);
+  // 아래 방향 화살표 (로봇→컨베이어)
+  ctx.fillStyle='rgba(252,211,77,0.6)';
+  ctx.font='14px Segoe UI';
+  const ay = Math.sin(t*0.08)*3;
+  ctx.fillText('↓', Z1-5, CY1-32+ay);
+  ctx.fillText('↓', Z1-5, CY2-32+ay);
+  ctx.restore();
 
   // AI Vision 카메라
   drawVisionCamera(Z3+15, CY1-75, false);
@@ -551,10 +605,10 @@ function animate(){
   drawStack(Z4+148, CY1+40, 2,4, 2);
 
   // 화살표
-  drawArrow(Z1-15, CY1-5);
-  drawArrow(Z2-15, CY1-5);
-  drawArrow(Z3-15, CY1-5);
-  drawArrow(Z4-15, CY1-5);
+  drawArrow(Z1*0.55, CY1-5);
+  drawArrow(Z2-15,   CY1-5);
+  drawArrow(Z3-15,   CY1-5);
+  drawArrow(Z4-15,   CY1-5);
 
   // 흐름 화살표
   drawFlowArrow();
