@@ -314,7 +314,7 @@ def inject_global_styles():
 
 
 def render_brand_header():
-    """상단 헤더 — 프로젝트 정보 + 우측 날짜/시간"""
+    """상단 헤더 — 프로젝트 정보 + 우측 날짜"""
     from datetime import datetime
     now = datetime.now()
     weekdays = ["월", "화", "수", "목", "금", "토", "일"]
@@ -323,12 +323,9 @@ def render_brand_header():
         f'<div style="display:flex;justify-content:space-between;align-items:flex-start;'
         f'padding:16px 0 18px 0;margin-bottom:8px;'
         f'border-bottom:2px solid {COLORS["border_subtle"]};">'
-
-        # 왼쪽
         f'<div>'
         f'<div style="font-size:12px;font-weight:700;color:{COLORS["accent_gold"]};'
-        f'letter-spacing:0.06em;margin-bottom:6px;">'
-        f'AI HACKATHON &nbsp;·&nbsp; SCM CAPSTONE</div>'
+        f'letter-spacing:0.06em;margin-bottom:6px;">SCM</div>'
         f'<div style="font-size:22px;font-weight:800;color:{COLORS["text_primary"]};'
         f'line-height:1.3;letter-spacing:-0.02em;margin-bottom:8px;">'
         f'AI 머신비전 기반 실시간 생산·재고 검증 시스템</div>'
@@ -336,15 +333,12 @@ def render_brand_header():
         f'font-weight:500;line-height:1.6;">'
         f'인천대학교 동북아물류대학원 &nbsp;·&nbsp; 발표자 &nbsp;정승현'
         f'</div></div>'
-
-        # 오른쪽: 시간
         f'<div style="text-align:right;flex-shrink:0;padding-left:24px;">'
-        f'<div style="font-size:36px;font-weight:800;color:{COLORS["text_primary"]};'
-        f'letter-spacing:-0.03em;line-height:1;">'
-        f'{now.strftime("%H:%M")}</div>'
+        f'<div style="font-size:20px;font-weight:700;color:{COLORS["text_primary"]};'
+        f'line-height:1.4;">'
+        f'{now.strftime("%Y년 %m월 %d일")}</div>'
         f'<div style="font-size:13px;color:{COLORS["text_muted"]};'
-        f'margin-top:6px;font-weight:500;">'
-        f'{now.strftime("%Y. %m. %d")} ({wd})'
+        f'margin-top:4px;font-weight:500;">{now.strftime("%A")} ({wd})'
         f'</div></div>'
         f'</div>',
         unsafe_allow_html=True,

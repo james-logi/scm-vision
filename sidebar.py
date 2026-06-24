@@ -127,7 +127,7 @@ def render_sidebar():
             f'margin:10px 0 4px 0;">핵심 메시지</div>',
             unsafe_allow_html=True,
         )
-        safe_page_link("pages/0_KEY_Points.py", "★  물류 흐름 손실 관리")
+        safe_page_link("pages/0_KEY_Points.py", "생산·재고 손실 관리")
 
         st.markdown(
             f'<div style="font-size:11px;font-weight:600;'
@@ -148,7 +148,7 @@ def render_sidebar():
             unsafe_allow_html=True,
         )
         safe_page_link("pages/7_Monitor.py",     "6.  검사 이력")
-        safe_page_link("pages/4_SCM_Insight.py", "7.  SCM 인사이트  ★")
+        safe_page_link("pages/4_SCM_Insight.py", "7.  SCM 인사이트")
 
         st.divider()
 

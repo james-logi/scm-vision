@@ -18,7 +18,8 @@ D14: 향후 권고 + 통합 마무리
 import streamlit as st
 import pandas as pd
 import altair as alt
-from styles import inject_global_styles, render_brand_header, render_page_subtitle, COLORS
+from styles import inject_global_styles, render_page_subtitle, COLORS
+from sidebar import render_brand_header
 from sidebar import ensure_session_state, render_sidebar
 from scm_insights import extract_all_insights, compute_top_kpis
 
@@ -95,65 +96,81 @@ insights, kpis = get_insights(df_hash)
 
 
 # ─────────────────────────────────────────────
-# Section 0: SCM 이론적 프레임워크 (PPT와 일관성)
+# Section 0: SCM 이론적 프레임워크
 # ─────────────────────────────────────────────
 st.markdown(
-    f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;'
-    f'color:{COLORS["accent_gold"]};letter-spacing:0.08em;'
-    f'text-transform:uppercase;margin-bottom:10px;">'
-    f'SECTION 0 · SCM THEORETICAL FRAMEWORK ⭐</div>',
+    f'<div style="font-size:12px;font-weight:700;color:{COLORS["accent_gold"]};'
+    f'letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">'
+    f'SCM THEORETICAL FRAMEWORK · 핵심 이론</div>',
     unsafe_allow_html=True,
 )
 
 st.markdown(
     f'<div style="background:{COLORS["bg_panel"]};'
     f'border-left:4px solid {COLORS["accent_gold"]};border-radius:6px;'
-    f'padding:20px 24px;margin-bottom:18px;">'
-    f'<div style="font-family:\'Noto Serif KR\',serif;font-size:17px;'
-    f'font-weight:700;color:{COLORS["text_primary"]};margin-bottom:8px;">'
-    f'📚 본 시스템이 충족시키는 4개 SCM 이론</div>'
-    f'<div style="font-size:13px;color:{COLORS["text_secondary"]};line-height:1.7;">'
-    f'본 시스템(AI Vision 검수 + Dual-Unit Tracking)은 SCM 분야의 '
-    f'<strong style="color:{COLORS["accent_gold"]};">4개 핵심 이론</strong>의 전제 조건을 '
-    f'동시에 충족시킵니다. 단순한 시스템 구현이 아닌, 학술적 기반 위의 솔루션입니다.'
+    f'padding:18px 24px;margin-bottom:18px;">'
+    f'<div style="font-size:16px;font-weight:700;color:{COLORS["text_primary"]};margin-bottom:8px;">'
+    f'본 프로젝트와 연관된 SCM 핵심 이론</div>'
+    f'<div style="font-size:14px;color:{COLORS["text_secondary"]};line-height:1.7;">'
+    f'AI Vision 검수 + Dual-Unit Tracking 시스템은 아래 SCM 이론들의 '
+    f'<strong style="color:{COLORS["accent_gold"]};">핵심 전제 조건을 동시에 충족</strong>합니다. '
+    f'단순 시스템 구현이 아닌 학술 이론 기반의 솔루션입니다.'
     f'</div></div>',
     unsafe_allow_html=True,
 )
 
-# 4개 SCM 이론 카드 (2x2 그리드)
-theory_col1, theory_col2 = st.columns(2)
+# 이론 카드: 재고 관리 + Bullwhip 을 1행(상단)에
+row1_c1, row1_c2 = st.columns(2)
+row2_c1, row2_c2 = st.columns(2)
+row3_c1, row3_c2 = st.columns(2)
 
 theories = [
     {
-        "col": theory_col1,
-        "title": "재고관리 (Inventory Management)",
+        "col": row1_c1,
+        "title": "재고 관리 (Inventory Management)",
         "subtitle": "EOQ · Safety Stock · Reorder Point",
-        "body": "재고의 정확성은 EOQ(경제적 주문량), Safety Stock, Reorder Point 등 모든 재고 관리 모델의 전제 조건이다.",
-        "link": "정확한 재고 = 모든 재고 모델의 전제조건",
+        "body": "재고의 정확성은 EOQ(경제적 주문량), Safety Stock, Reorder Point 등 모든 재고 관리 모델의 핵심 전제 조건이다. 부정확한 재고 데이터는 과잉 또는 부족 주문으로 이어진다.",
+        "link": "AI Vision OK 판정 수량만 재고 인정 → 정확도 확보",
         "color": COLORS["accent_cobalt"],
     },
     {
-        "col": theory_col2,
-        "title": "IRI (Inventory Record Inaccuracy)",
-        "subtitle": "DeHoratius & Raman (2008)",
-        "body": "전통적 재고 시스템에서 평균 65%의 부정확성이 관찰되며, 이는 매장 단위 운영 결정의 정확도를 훼손한다.",
-        "link": f"본 시스템: 65% → {kpis['iri_rate_pct']:.2f}% ({65 - kpis['iri_rate_pct']:.1f}%p 개선)",
-        "color": COLORS["status_warning"],
-    },
-    {
-        "col": theory_col1,
+        "col": row1_c2,
         "title": "Bullwhip Effect (채찍효과)",
         "subtitle": "Lee, Padmanabhan & Whang (1997)",
-        "body": "공급망 상류로 갈수록 수요 변동성이 증폭되는 현상. 4대 원인 중 정보 왜곡과 재고 부정확성이 핵심.",
-        "link": "① 정보 왜곡 + ④ 재고 부정확성 동시 차단",
+        "body": "공급망 상류로 갈수록 수요 변동성이 증폭되는 현상. P-Box 단위 변환 지점에서 발생하는 정보 손실이 채찍효과의 출발점이 된다.",
+        "link": "단위 변환 지점에 검수 게이트 → 정보 왜곡 원천 차단",
         "color": COLORS["accent_gold"],
     },
     {
-        "col": theory_col2,
-        "title": "JIT · VMI · Information Visibility",
-        "subtitle": "Ohno · Lee & Whang",
-        "body": "JIT, VMI 같은 advanced SCM 기법은 모두 정확한 재고 데이터를 전제로 한다. 정보 가시성이 SCM 성과의 핵심.",
-        "link": "Advanced SCM 기법의 기반 인프라 제공",
+        "col": row2_c1,
+        "title": "IRI (Inventory Record Inaccuracy)",
+        "subtitle": "DeHoratius & Raman (2008)",
+        "body": "전통적 재고 시스템에서 평균 65%의 부정확성이 관찰됨. 수량 오류, 위치 오류, 분류 오류로 발생하며 매장 운영 결정의 정확도를 훼손한다.",
+        "link": f"본 시스템: IRI 65% → {kpis['iri_rate_pct']:.2f}% ({65 - kpis['iri_rate_pct']:.1f}%p 개선)",
+        "color": COLORS["status_warning"],
+    },
+    {
+        "col": row2_c2,
+        "title": "Dual-Unit Tracking",
+        "subtitle": "Case × EA 동시 추적",
+        "body": "박스 단위(Case)와 개별 단위(EA)를 동시에 추적하는 구조. 단위 변환 시 발생하는 정보 손실(IRI)을 차단하고 WMS 데이터 신뢰성을 높인다.",
+        "link": "P-Box 검수 시 Case + EA 동시 기록 → WMS 자동 반영",
+        "color": COLORS["accent_cobalt"],
+    },
+    {
+        "col": row3_c1,
+        "title": "JIT (Just-In-Time)",
+        "subtitle": "Taiichi Ohno · Toyota Production System",
+        "body": "필요한 시간에 필요한 수량만 생산·조달하는 방식. 유통기한이 짧은 식품 제조에서 필수적이며, 정확한 실시간 재고 정보를 전제로 한다.",
+        "link": "주문 기반 생산 + 실시간 검수 → JIT 운영 가능",
+        "color": COLORS["status_ok"],
+    },
+    {
+        "col": row3_c2,
+        "title": "Information Visibility",
+        "subtitle": "Lee & Whang (2000)",
+        "body": "공급망 파트너 간 정보 공유가 SCM 성과를 결정한다. 생산→검수→재고→출고의 전 과정을 실시간으로 가시화해야 채찍효과를 억제할 수 있다.",
+        "link": "생산→검수→재고→출고 전 구간 실시간 데이터화",
         "color": COLORS["status_ok"],
     },
 ]
@@ -163,25 +180,18 @@ for t in theories:
         st.markdown(
             f'<div style="background:{COLORS["bg_panel"]};'
             f'border:1px solid {COLORS["border_subtle"]};'
-            f'border-left:3px solid {t["color"]};border-radius:6px;'
-            f'padding:16px 20px;margin-bottom:12px;height:175px;">'
-            # 제목
-            f'<div style="font-family:\'Noto Serif KR\',serif;font-size:15px;'
-            f'font-weight:700;color:{t["color"]};margin-bottom:4px;line-height:1.3;">'
-            f'{t["title"]}</div>'
-            # 출처/모델
-            f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;'
-            f'color:{COLORS["text_muted"]};letter-spacing:0.05em;margin-bottom:10px;">'
-            f'{t["subtitle"]}</div>'
-            # 본문
-            f'<div style="font-size:12px;line-height:1.6;color:{COLORS["text_secondary"]};'
-            f'margin-bottom:10px;">{t["body"]}</div>'
-            # 본 시스템 연결
-            f'<div style="background:{COLORS["bg_deep"]};border-radius:4px;'
-            f'padding:8px 12px;font-family:\'IBM Plex Mono\',monospace;'
-            f'font-size:11px;color:{t["color"]};line-height:1.4;">'
-            f'▸ {t["link"]}'
-            f'</div>'
+            f'border-left:4px solid {t["color"]};border-radius:8px;'
+            f'padding:18px 20px;margin-bottom:14px;">'
+            f'<div style="font-size:15px;font-weight:700;color:{t["color"]};'
+            f'margin-bottom:4px;line-height:1.3;">{t["title"]}</div>'
+            f'<div style="font-size:12px;color:{COLORS["text_muted"]};'
+            f'font-weight:500;margin-bottom:10px;">{t["subtitle"]}</div>'
+            f'<div style="font-size:13px;line-height:1.7;color:{COLORS["text_secondary"]};'
+            f'margin-bottom:12px;">{t["body"]}</div>'
+            f'<div style="background:#EFF6FF;border-radius:4px;'
+            f'padding:8px 12px;font-size:12px;font-weight:600;'
+            f'color:{t["color"]};line-height:1.5;">'
+            f'▸ {t["link"]}</div>'
             f'</div>',
             unsafe_allow_html=True,
         )
