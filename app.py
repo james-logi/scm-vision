@@ -43,14 +43,14 @@ def eval_card(col, num, title, body, color):
         f'<div style="font-size:13px;color:{COLORS["text_secondary"]};line-height:1.7;">{body}</div>'
         f'</div>', unsafe_allow_html=True)
 
-eval_card(e1, "①", "중요한가?",
-    "생산·제조업의 재고 불일치는 채찍효과·납품 지연·비용 손실로 이어지는 핵심 문제",
+eval_card(e1, "①", "어떤 문제를 해결하고 싶은가?",
+    "생산→물류 단위 변환 지점에서 수량 정보가 손실되어<br>재고 불일치·납품 오류·WMS 오차가 반복 발생",
     COLORS["accent_cobalt"])
-eval_card(e2, "②", "못 풀어 괴로운가?",
-    "계수기 설정 오류, ROI 한계, 예외 상황 — 기존 방식으로 근본 해결 안 됨",
+eval_card(e2, "②", "문제 해결에 어려운 것은 무엇인가?",
+    "계수기 설정 오류·ROI 한계·예외 상황 발생 등<br>기존 방식으로는 근본 원인을 차단할 수 없음",
     COLORS["accent_gold"])
-eval_card(e3, "③", "공감되는가?",
-    "수많은 생산·제조업체가 동일하게 겪는 문제 — 시장 크기 충분, 확장 가능",
+eval_card(e3, "③", "사업 성과와 효과를 낼 수 있는가?",
+    "식품 제조·유통 전반에 동일한 문제가 존재하며<br>AI Vision 도입으로 IRI 65% → 1.42% 개선 달성",
     COLORS["status_ok"])
 
 st.markdown("")
