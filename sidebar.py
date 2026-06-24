@@ -71,14 +71,24 @@ def render_sidebar():
         section[data-testid="stSidebarNav"] { display: none !important; }
         section[data-testid="stSidebarNav"] + div { display: none !important; }
 
+        /* 사이드바 상단 여백 완전 제거 */
+        section[data-testid="stSidebar"] > div:first-child {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 0.4rem !important;
+            margin-top: 0 !important;
+        }
+        [data-testid="stSidebarContent"] {
+            padding-top: 0 !important;
+        }
+
         /* 사이드바 전체 스타일 */
         section[data-testid="stSidebar"] {
             background: #F8FAFC;
             border-right: 1px solid #E2E8F0;
             min-width: 220px !important;
-        }
-        section[data-testid="stSidebar"] .block-container {
-            padding-top: 1rem !important;
         }
         /* 메뉴 링크 */
         a[data-testid="stPageLink-NavLink"] {
