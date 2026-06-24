@@ -491,10 +491,10 @@ for(let i=0;i<6;i++){
   breads1.push({ x: i*(Z1/5)+20, spd:1.3+Math.random()*0.3 });
   breads2.push({ x: i*(Z1/5)+30, spd:1.1+Math.random()*0.3 });
 }
-// P-Box: 로봇 위치(Z1) 이후 ~ AI Vision(Z3)까지 이동
+// P-Box: 작업실 중간(robotX) 이후 ~ AI Vision(Z3)까지 이동
 for(let i=0;i<4;i++){
-  pboxes1.push({ x: Z1 + i*(( Z3-Z1)/4), spd:0.9 });
-  pboxes2.push({ x: Z1 + i*(( Z3-Z1)/4)+15, spd:0.85 });
+  pboxes1.push({ x: (Z1+Z2)/2 + i*((Z3-(Z1+Z2)/2)/4), spd:0.9 });
+  pboxes2.push({ x: (Z1+Z2)/2 + i*((Z3-(Z1+Z2)/2)/4)+15, spd:0.85 });
 }
 
 // 전환 파티클 (빵→박스 효과)
@@ -519,11 +519,12 @@ function animate(){
   drawConveyor(CY1);
   drawConveyor(CY2);
 
-  // ── 빵: 생산동 → 로봇 앞(Z1-20)까지만 ──
+  const robotX = (Z1+Z2)/2;  // 작업실 중간 (공유 변수)
+
+  // ── 빵: 생산동 → 로봇 앞까지만 ──
   breads1.forEach(b=>{
     b.x += b.spd;
-    if(b.x > Z1-20){
-      // 로봇 앞에서 사라지며 파티클 생성
+    if(b.x > robotX-20){
       spawnParticle(b.x, CY1-12, '#F97316');
       b.x = -10;
     }
@@ -531,7 +532,7 @@ function animate(){
   });
   breads2.forEach(b=>{
     b.x += b.spd;
-    if(b.x > Z1-20){
+    if(b.x > robotX-20){
       spawnParticle(b.x, CY2-12, '#16A34A');
       b.x = -10;
     }
@@ -549,46 +550,42 @@ function animate(){
     if(p.life<=0) particles.splice(i,1);
   }
 
-  // ── P-Box: 로봇 위치(Z1)부터 ~ AI Vision(Z3) ──
+  // ── P-Box: 로봇 위치(robotX)부터 ~ AI Vision(Z3) ──
   pboxes1.forEach(b=>{
     b.x += b.spd;
-    if(b.x > Z3-10) b.x = Z1;
+    if(b.x > Z3-10) b.x = robotX;
     drawPBox(b.x, CY1-26, 32, 24, true);
   });
   pboxes2.forEach(b=>{
     b.x += b.spd;
-    if(b.x > Z3-10) b.x = Z1;
+    if(b.x > Z3-10) b.x = robotX;
     drawPBox(b.x, CY2-26, 32, 24, true);
   });
 
-  // ── Figure AI 로봇: Z1 바로 앞(전환 지점) ──
-  // 로봇 발이 컨베이어 위, 팔이 아래 컨베이어 방향으로 움직임
+  // ── Figure AI 로봇: 작업실 중간 위치 ──
+  const robotX = (Z1+Z2)/2;
   const phase1=(t*0.012)%(Math.PI*2);
   const phase2=(t*0.012+Math.PI)%(Math.PI*2);
-  // 라인1 로봇: Z1에서 왼쪽(빵쪽)을 향해 팔을 뻗음
-  drawFigureRobot(Z1-10, CY1-85, phase1);
-  // 라인2 로봇: Z1에서 왼쪽을 향해
-  drawFigureRobot(Z1-10, CY2-85, phase2);
+  drawFigureRobot(robotX, CY1-85, phase1);
+  drawFigureRobot(robotX, CY2-85, phase2);
 
   // ── 전환 지점 빈 P-Box (로봇이 채우는 중) ──
-  // 채워지는 정도가 시간에 따라 변함
-  const fillCycle = (Math.sin(t*0.04)+1)/2; // 0~1
-  drawPBox(Z1+5, CY1-26, 32, 24, fillCycle>0.4);
-  drawPBox(Z1+5, CY2-26, 32, 24, fillCycle>0.6);
+  const fillCycle = (Math.sin(t*0.04)+1)/2;
+  drawPBox(robotX+5, CY1-26, 32, 24, fillCycle>0.4);
+  drawPBox(robotX+5, CY2-26, 32, 24, fillCycle>0.6);
 
   // ── 전환 라벨 ──
   ctx.save();
   ctx.textAlign='center';
   ctx.font='bold 10px Segoe UI';
   ctx.fillStyle='rgba(252,211,77,0.8)';
-  ctx.fillText('EA→Case', Z1, CY1-95);
-  ctx.fillText('EA→Case', Z1, CY2-95);
-  // 아래 방향 화살표 (로봇→컨베이어)
+  ctx.fillText('EA→Case', robotX, CY1-100);
+  ctx.fillText('EA→Case', robotX, CY2-100);
   ctx.fillStyle='rgba(252,211,77,0.6)';
   ctx.font='14px Segoe UI';
   const ay = Math.sin(t*0.08)*3;
-  ctx.fillText('↓', Z1-5, CY1-32+ay);
-  ctx.fillText('↓', Z1-5, CY2-32+ay);
+  ctx.fillText('↓', robotX, CY1-35+ay);
+  ctx.fillText('↓', robotX, CY2-35+ay);
   ctx.restore();
 
   // AI Vision 카메라
