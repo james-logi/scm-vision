@@ -39,10 +39,18 @@ def inject_global_styles():
     section[data-testid="stSidebarNav"],
     section[data-testid="stSidebarNav"] ~ div,
     div[data-testid="stSidebarNavItems"],
-    ul[data-testid="stSidebarNavItems"] {{
+    ul[data-testid="stSidebarNavItems"],
+    [data-testid="stSidebarNavLink"] {{
         display: none !important;
+        visibility: hidden !important;
         height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
         overflow: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }}
 
     /* ── 전체 기본 폰트 크기 ── */
