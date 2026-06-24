@@ -14,7 +14,7 @@ from sidebar import render_brand_header
 from sidebar import ensure_session_state, render_sidebar
 
 st.set_page_config(
-    page_title="KEY Points | AI Vision",
+    page_title="SCM-재고관리",
     page_icon="◆",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -31,7 +31,7 @@ render_brand_header()
 # 페이지 제목
 # ─────────────────────────────────────────────
 st.markdown("# 생산·출고 물류 흐름 손실 관리")
-render_page_subtitle("AS-IS 현재 문제 상황 · TO-BE AI Vision 검수 / 모니터링")
+
 
 
 # ─────────────────────────────────────────────

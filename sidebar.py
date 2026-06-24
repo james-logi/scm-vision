@@ -44,30 +44,20 @@ def render_brand_header():
         f'<div style="display:flex;justify-content:space-between;align-items:flex-start;'
         f'padding-bottom:14px;margin-bottom:6px;'
         f'border-bottom:2px solid {COLORS["border_subtle"]};">'
-
-        # 왼쪽: 프로젝트 정보
         f'<div>'
         f'<div style="font-size:11px;font-weight:600;color:{COLORS["accent_gold"]};'
-        f'letter-spacing:0.04em;margin-bottom:4px;">'
-        f'AI HACKATHON · SCM CAPSTONE</div>'
+        f'letter-spacing:0.04em;margin-bottom:4px;">SCM</div>'
         f'<div style="font-size:17px;font-weight:700;color:{COLORS["text_primary"]};'
-        f'line-height:1.35;letter-spacing:-0.01em;">'
-        f'AI 머신비전 기반 실시간<br>생산·재고 검증 시스템</div>'
-        f'<div style="font-size:12px;color:{COLORS["text_tertiary"]};margin-top:6px;'
-        f'line-height:1.6;">'
-        f'인천대학교 동북아물류대학원<br>'
-        f'발표자 &nbsp;정승현'
-        f'</div></div>'
-
-        # 오른쪽: 날짜/시간
+        f'line-height:1.35;">AI 머신비전 기반 실시간 생산·재고 검증 시스템</div>'
+        f'<div style="font-size:12px;color:{COLORS["text_tertiary"]};margin-top:4px;">'
+        f'인천대학교 동북아물류대학원 &nbsp;·&nbsp; 발표자 정승현</div>'
+        f'</div>'
         f'<div style="text-align:right;flex-shrink:0;">'
         f'<div style="font-size:26px;font-weight:700;color:{COLORS["text_primary"]};'
-        f'letter-spacing:-0.02em;line-height:1;">'
-        f'{now.strftime("%H:%M")}</div>'
+        f'line-height:1;">{now.strftime("%H:%M")}</div>'
         f'<div style="font-size:11px;color:{COLORS["text_muted"]};margin-top:4px;">'
         f'{now.strftime("%Y.%m.%d")} ({wd})</div>'
         f'</div>'
-
         f'</div>',
         unsafe_allow_html=True,
     )
@@ -114,7 +104,7 @@ def render_sidebar():
             f'<div style="padding:8px 4px 12px 4px;">'
             f'<div style="font-size:11px;font-weight:600;'
             f'color:{COLORS["accent_gold"]};letter-spacing:0.04em;'
-            f'margin-bottom:6px;">SCM CAPSTONE</div>'
+            f'margin-bottom:6px;">SCM</div>'
             f'<div style="font-size:14px;font-weight:700;'
             f'color:{COLORS["text_primary"]};line-height:1.4;">'
             f'AI 머신비전 기반<br>생산·재고 검증 시스템</div>'
