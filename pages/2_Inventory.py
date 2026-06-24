@@ -44,6 +44,7 @@ def load_data():
 df = load_data()
 registry = SkuRegistry()
 today = datetime.date.today()  # 실제 오늘 날짜 사용
+data_last = df["date"].max()  # CSV 데이터 마지막 날짜 (필터링용)
 
 # ─── 필터 ───
 f1, f2, _ = st.columns([1, 1, 2])
@@ -53,9 +54,9 @@ with f2:
     view_mode = st.selectbox("보기 방식", ["재고 요약표", "SKU별 상세", "매장별 현황"])
 
 if period == "최근 7일":
-    df_f = df[df["date"] >= today - timedelta(days=6)]
+    df_f = df[df["date"] >= data_last - timedelta(days=6)]
 elif period == "최근 30일":
-    df_f = df[df["date"] >= today - timedelta(days=29)]
+    df_f = df[df["date"] >= data_last - timedelta(days=29)]
 else:
     df_f = df.copy()
 

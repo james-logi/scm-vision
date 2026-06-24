@@ -35,7 +35,8 @@ WIN_END   = TODAY + timedelta(days=5)
 ALL_DATES = [WIN_START + timedelta(days=i) for i in range(8)]
 
 # 일평균 (최근 14일 기준 예측용)
-recent_14 = df[df["date"] >= TODAY - timedelta(days=13)]
+DATA_LAST  = df["date"].max()
+recent_14  = df[df["date"] >= DATA_LAST - timedelta(days=13)]  # CSV 실제 데이터 기준
 avg_total  = len(recent_14) / 14
 avg_ok     = len(recent_14[recent_14["verdict"] == "OK"]) / 14
 avg_ng     = avg_total - avg_ok
