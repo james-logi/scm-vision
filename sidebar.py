@@ -137,7 +137,7 @@ def render_sidebar():
             f'margin:10px 0 4px 0;">핵심 메시지</div>',
             unsafe_allow_html=True,
         )
-        safe_page_link("pages/0_KEY_Points.py", "★  재고 불일치 시나리오 vs 재고 관리 도입")
+        safe_page_link("pages/0_KEY_Points.py", "★  물류 흐름 손실 관리")
 
         st.markdown(
             f'<div style="font-size:11px;font-weight:600;'
