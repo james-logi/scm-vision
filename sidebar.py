@@ -137,8 +137,8 @@ def render_sidebar():
         )
         safe_page_link("pages/1_Production.py", "1.  생산 라인 현황")
         safe_page_link("pages/6_Vision_Test.py", "2.  비전 검사  🔬")
-        safe_page_link("pages/2_Inventory.py",   "3.  재고 현황")
-        safe_page_link("pages/1_Inspection.py",  "4.  출고 검수")
+        safe_page_link("pages/1_Inspection.py",  "3.  재고 검수")
+        safe_page_link("pages/2_Inventory.py",   "4.  재고 현황")
         safe_page_link("pages/3_Dispatch.py",    "5.  출고 처리")
 
         st.markdown(

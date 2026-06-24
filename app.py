@@ -96,14 +96,14 @@ st.markdown(
     unsafe_allow_html=True)
 
 steps = [
-    ("★", "물류 흐름 손실 관리",   "AS-IS 현재 문제 상황 인지\nTO-BE AI Vision 검수",  COLORS["accent_gold"],    True),
-    ("1", "생산 라인 현황",          "LINE 1~10 P-Box 생산량\nNG율 · 라인별 상태 카드",  COLORS["accent_cobalt"],  False),
-    ("2", "비전 검사  🔬",           "이미지 업로드 → AI 실시간 분석\n폴더 자동스캔 지원", COLORS["accent_gold"],    True),
-    ("3", "재고 현황",               "주문 기반 생산 · 부족분 관리\n생산계획/재고/출고예정", COLORS["accent_cobalt"], False),
-    ("4", "출고 검수",               "−2일 ~ +5일 관리 윈도우\n날짜별 검수 결과 확인",    COLORS["text_secondary"], False),
-    ("5", "출고 처리",               "일자별 출고 완료/예정 계획\n매장·상품별 출고 현황",  COLORS["text_secondary"], False),
-    ("6", "검사 이력",               "누적 성과 차트 (EA/Case)\n상품별 일별 수량 추이",    COLORS["status_ok"],      False),
-    ("7", "SCM 인사이트  ★",        "채찍효과 이론 연결\nClaude 자동 추론 + 65%→1.42%", COLORS["accent_gold"],    True),
+    ("★", "물류 흐름 손실 관리",   "AS-IS 현재 문제 상황 인지\nTO-BE AI Vision 검수",   COLORS["accent_gold"],    True),
+    ("1", "생산 라인 현황",          "LINE 1~10 P-Box 생산량\nNG율 · 라인별 상태 카드",   COLORS["accent_cobalt"],  False),
+    ("2", "비전 검사  🔬",           "이미지 업로드 → AI 실시간 분석\n폴더 자동스캔 지원",  COLORS["accent_gold"],    True),
+    ("3", "재고 검수",               "−2일~+5일 검수 윈도우\nOK 판정 → 재고 반영",         COLORS["accent_cobalt"],  False),
+    ("4", "재고 현황",               "검수 OK 수량 기반 재고\n생산계획/재고/출고예정/부족분", COLORS["text_secondary"], False),
+    ("5", "출고 처리",               "일자별 출고 완료/예정 계획\n매장·상품별 출고 현황",    COLORS["text_secondary"], False),
+    ("6", "검사 이력",               "누적 성과 차트 (EA/Case)\n상품별 일별 수량 추이",     COLORS["status_ok"],      False),
+    ("7", "SCM 인사이트  ★",        "채찍효과 이론 연결\nClaude 자동 추론 + 65%→1.42%",  COLORS["accent_gold"],    True),
 ]
 
 row1, row2 = steps[:4], steps[4:]

@@ -19,7 +19,18 @@ render_sidebar()
 render_brand_header()
 
 st.markdown("# 재고 현황")
-render_page_subtitle("INVENTORY STATUS · SKU BASED · PRODUCTION vs DISPATCH PLAN")
+render_page_subtitle("INVENTORY STATUS · INSPECTION OK → STOCK · PRODUCTION vs DISPATCH")
+
+st.markdown(
+    f'<div style="background:#F0FDF4;border-left:4px solid {COLORS["status_ok"]};'
+    f'border-radius:6px;padding:14px 20px;margin-top:8px;margin-bottom:4px;">'
+    f'<span style="font-size:14px;font-weight:700;color:{COLORS["status_ok"]};">✅ 재고 반영 원칙</span>'
+    f'<span style="font-size:13px;color:{COLORS["text_secondary"]};margin-left:12px;">'
+    f'[3. 재고 검수]에서 <strong>AI Vision OK 판정</strong>을 받은 P-Box만 재고로 인정합니다. '
+    f'NG 차단 수량은 재고에서 제외되어 <strong style="color:{COLORS["status_danger"]};">부족분</strong>으로 표시됩니다.'
+    f'</span></div>',
+    unsafe_allow_html=True,
+)
 
 @st.cache_data(ttl=60)
 def load_data():

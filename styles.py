@@ -72,10 +72,44 @@ def inject_global_styles():
         max-width: 1440px;
     }}
 
-    /* ── 일반 텍스트 ── */
-    p, li, span, div {{
+    /* ── 일반 텍스트 (selectbox 제외) ── */
+    p, li {{
         font-size: 15px;
         line-height: 1.7;
+    }}
+
+    /* ── Selectbox / Dropdown 글자 강제 표시 ── */
+    .stSelectbox div[data-baseweb="select"] span,
+    .stSelectbox div[data-baseweb="select"] div,
+    .stSelectbox [data-baseweb="select"] > div,
+    div[data-baseweb="select"] span,
+    div[data-baseweb="select"] div {{
+        color: {COLORS['text_primary']} !important;
+        font-size: 15px !important;
+    }}
+    /* 드롭다운 옵션 목록 */
+    ul[data-baseweb="menu"] li,
+    li[role="option"],
+    div[role="option"] {{
+        color: {COLORS['text_primary']} !important;
+        font-size: 15px !important;
+        background: white !important;
+    }}
+    li[role="option"]:hover,
+    div[role="option"]:hover {{
+        background: #EFF6FF !important;
+    }}
+    /* 선택된 옵션 */
+    li[aria-selected="true"],
+    div[aria-selected="true"] {{
+        background: #EFF6FF !important;
+        color: {COLORS['accent_gold']} !important;
+    }}
+    /* Radio, Checkbox 레이블 */
+    .stRadio label p,
+    .stCheckbox label p {{
+        color: {COLORS['text_secondary']} !important;
+        font-size: 15px !important;
     }}
 
     /* ── 헤딩 ── */

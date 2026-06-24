@@ -9,7 +9,7 @@ from datetime import timedelta, date as date_type
 from styles import inject_global_styles, render_page_subtitle, COLORS
 from sidebar import ensure_session_state, render_sidebar, render_brand_header
 
-st.set_page_config(page_title="출고 검수 | SCM", page_icon="◆",
+st.set_page_config(page_title="재고 검수 | SCM", page_icon="◆",
                    layout="wide", initial_sidebar_state="expanded")
 
 inject_global_styles()
@@ -17,8 +17,8 @@ ensure_session_state()
 render_sidebar()
 render_brand_header()
 
-st.markdown("# 출고 검수")
-render_page_subtitle("DISPATCH INSPECTION · -2 DAYS ~ +5 DAYS WINDOW")
+st.markdown("# 재고 검수")
+render_page_subtitle("INVENTORY INSPECTION · AI VISION VERIFIED · -2 DAYS ~ +5 DAYS")
 
 @st.cache_data(ttl=60)
 def load_data():
