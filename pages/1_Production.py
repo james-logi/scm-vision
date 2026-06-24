@@ -9,7 +9,8 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from datetime import datetime, timedelta
-from styles import inject_global_styles, render_brand_header, render_page_subtitle, COLORS
+from styles import inject_global_styles, render_page_subtitle, COLORS
+from sidebar import render_brand_header
 from sidebar import ensure_session_state, render_sidebar, SITE_CONFIG
 
 st.set_page_config(
@@ -281,9 +282,8 @@ with chart_tab2:
 # ─── SKU × 라인 매트릭스 ───
 st.markdown("---")
 st.markdown(
-    f'<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;'
-    f'color:{COLORS["text_tertiary"]};letter-spacing:0.08em;margin-bottom:10px;">'
-    f'SKU × LINE MATRIX · P-BOX COUNT</div>',
+    f'<div style="font-size:11px;font-weight:700;color:{COLORS["text_muted"]};'
+    f'letter-spacing:0.08em;margin-bottom:12px;">SKU × LINE MATRIX · P-BOX COUNT</div>',
     unsafe_allow_html=True,
 )
 
@@ -293,12 +293,39 @@ matrix = filtered.pivot_table(
 )
 
 if not matrix.empty:
-    matrix_display = matrix.copy()
-    matrix_display.index.name = "SKU"
-    matrix_display.columns.name = None
-    st.dataframe(
-        matrix_display.style.background_gradient(
-            cmap="Blues", axis=None
-        ),
-        use_container_width=True,
-    )
+    lines_in_matrix = sorted(matrix.columns.tolist())
+    max_val = matrix.values.max() if matrix.values.max() > 0 else 1
+
+    # 헤더
+    header_cols = st.columns([2] + [1] * len(lines_in_matrix))
+    header_cols[0].markdown(
+        f'<div style="font-size:13px;font-weight:700;color:{COLORS["text_muted"]};'
+        f'padding:8px 4px;border-bottom:2px solid {COLORS["border_strong"]};">SKU</div>',
+        unsafe_allow_html=True)
+    for col, line in zip(header_cols[1:], lines_in_matrix):
+        col.markdown(
+            f'<div style="font-size:13px;font-weight:700;color:{COLORS["accent_cobalt"]};'
+            f'padding:8px 4px;border-bottom:2px solid {COLORS["border_strong"]};'
+            f'text-align:center;">{line}</div>', unsafe_allow_html=True)
+
+    # 행
+    for sku_name, row in matrix.iterrows():
+        row_cols = st.columns([2] + [1] * len(lines_in_matrix))
+        row_cols[0].markdown(
+            f'<div style="font-size:14px;font-weight:600;color:{COLORS["text_primary"]};'
+            f'padding:10px 4px;border-bottom:1px solid {COLORS["border_subtle"]};">'
+            f'{sku_name}</div>', unsafe_allow_html=True)
+        for col, line in zip(row_cols[1:], lines_in_matrix):
+            val = int(row.get(line, 0))
+            intensity = int(val / max_val * 100)
+            bg = f"rgba(8,145,178,{intensity/100 * 0.25 + 0.03})" if val > 0 else "transparent"
+            color = COLORS["accent_cobalt"] if val > 0 else COLORS["text_muted"]
+            col.markdown(
+                f'<div style="text-align:center;padding:10px 4px;'
+                f'border-bottom:1px solid {COLORS["border_subtle"]};'
+                f'background:{bg};border-radius:4px;">'
+                f'<span style="font-size:15px;font-weight:700;color:{color};">'
+                f'{"—" if val == 0 else val}</span>'
+                f'</div>', unsafe_allow_html=True)
+else:
+    st.info("해당 기간 데이터가 없습니다.")
