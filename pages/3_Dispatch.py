@@ -6,6 +6,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import timedelta
+import datetime
 from styles import inject_global_styles, render_page_subtitle, COLORS
 from sidebar import ensure_session_state, render_sidebar, render_brand_header
 
@@ -30,7 +31,7 @@ def load_data():
 
 df = load_data()
 df_ok = df[df["is_ok"]]
-TODAY     = df["date"].max()
+TODAY     = datetime.date.today()  # 실제 오늘 날짜 사용
 WIN_START = TODAY - timedelta(days=2)
 WIN_END   = TODAY + timedelta(days=5)
 ALL_DATES = [WIN_START + timedelta(days=i) for i in range(8)]

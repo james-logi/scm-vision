@@ -6,6 +6,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import timedelta, date as date_type
+import datetime
 from styles import inject_global_styles, render_page_subtitle, COLORS
 from sidebar import ensure_session_state, render_sidebar, render_brand_header
 
@@ -28,7 +29,7 @@ def load_data():
     return df
 
 df = load_data()
-TODAY = df["date"].max()          # 데모: CSV 최신 날짜를 오늘로
+TODAY = datetime.date.today()     # 실제 오늘 날짜 사용
 WIN_START = TODAY - timedelta(days=2)
 WIN_END   = TODAY + timedelta(days=5)
 ALL_DATES = [WIN_START + timedelta(days=i) for i in range(8)]

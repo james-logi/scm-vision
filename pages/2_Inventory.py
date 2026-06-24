@@ -6,6 +6,7 @@ Page 3: 재고 현황
 import streamlit as st
 import pandas as pd
 from datetime import timedelta
+import datetime
 from styles import inject_global_styles, render_page_subtitle, COLORS
 from sidebar import ensure_session_state, render_sidebar, render_brand_header
 from sku_registry import SkuRegistry
@@ -42,7 +43,7 @@ def load_data():
 
 df = load_data()
 registry = SkuRegistry()
-today = df["date"].max()
+today = datetime.date.today()  # 실제 오늘 날짜 사용
 
 # ─── 필터 ───
 f1, f2, _ = st.columns([1, 1, 2])
