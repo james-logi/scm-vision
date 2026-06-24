@@ -1,35 +1,28 @@
 """
-출고 재고 검수 관리 - 디자인 시스템 v2
-화이트 배경 + 딥블루 비즈니스 톤 (Notion / Linear 스타일)
+출고 재고 검수 관리 - 디자인 시스템 v3
+화이트 배경 · 폰트 크기 강화 · 발표용 임팩트 디자인
 """
 
 import streamlit as st
 
 
-# ============================================================
-# 컬러 팔레트
-# ============================================================
 COLORS = {
-    # 배경
-    "bg_deep":     "#FFFFFF",
-    "bg_panel":    "#F8FAFC",
-    "bg_elevated": "#F1F5F9",
-    "bg_card":     "#FFFFFF",
+    "bg_deep":       "#FFFFFF",
+    "bg_panel":      "#F8FAFC",
+    "bg_elevated":   "#F1F5F9",
+    "bg_card":       "#FFFFFF",
     "border_subtle": "#E2E8F0",
     "border_strong": "#CBD5E1",
 
-    # 텍스트
     "text_primary":   "#0F172A",
     "text_secondary": "#334155",
     "text_tertiary":  "#64748B",
     "text_muted":     "#94A3B8",
 
-    # 브랜드 컬러
-    "accent_gold":     "#1E40AF",   # 딥블루 (골드 대체)
-    "accent_gold_dim": "#BFDBFE",   # 연한 블루
-    "accent_cobalt":   "#0891B2",   # 틸 블루
+    "accent_gold":     "#1E40AF",
+    "accent_gold_dim": "#BFDBFE",
+    "accent_cobalt":   "#0891B2",
 
-    # 상태
     "status_ok":      "#059669",
     "status_warning": "#D97706",
     "status_danger":  "#DC2626",
@@ -37,49 +30,63 @@ COLORS = {
 }
 
 
-# ============================================================
-# 전역 CSS
-# ============================================================
 def inject_global_styles():
     css = f"""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700&display=swap');
 
-    /* ── Streamlit 자동 생성 페이지 메뉴 완전 숨김 ── */
+    /* ── Streamlit 자동 메뉴 완전 숨김 ── */
     section[data-testid="stSidebarNav"],
     section[data-testid="stSidebarNav"] ~ div,
     div[data-testid="stSidebarNavItems"],
     ul[data-testid="stSidebarNavItems"] {{
         display: none !important;
-        visibility: hidden !important;
         height: 0 !important;
         overflow: hidden !important;
     }}
 
-    /* ── 배경/본문 ── */
+    /* ── 전체 기본 폰트 크기 ── */
+    html, body, [class*="css"] {{
+        font-size: 16px;
+    }}
+
+    /* ── 배경 ── */
     .stApp {{
         background: #FFFFFF;
         color: {COLORS['text_primary']};
         font-family: 'Noto Sans KR', 'Inter', -apple-system, sans-serif;
+        font-size: 16px;
     }}
 
     .main .block-container {{
-        padding-top: 1.5rem;
-        padding-bottom: 2rem;
-        max-width: 1400px;
+        padding-top: 1.8rem;
+        padding-bottom: 3rem;
+        max-width: 1440px;
+    }}
+
+    /* ── 일반 텍스트 ── */
+    p, li, span, div {{
+        font-size: 15px;
+        line-height: 1.7;
     }}
 
     /* ── 헤딩 ── */
     h1 {{
         font-family: 'Noto Sans KR', sans-serif;
         font-weight: 700;
-        font-size: 1.75rem !important;
+        font-size: 2rem !important;
         color: {COLORS['text_primary']} !important;
         letter-spacing: -0.02em;
-        margin-bottom: 0.25rem !important;
+        margin-bottom: 0.2rem !important;
+        line-height: 1.3 !important;
     }}
-    h2, h3 {{
-        font-family: 'Noto Sans KR', sans-serif;
+    h2 {{
+        font-size: 1.5rem !important;
+        font-weight: 700;
+        color: {COLORS['text_primary']} !important;
+    }}
+    h3 {{
+        font-size: 1.2rem !important;
         font-weight: 600;
         color: {COLORS['text_primary']} !important;
     }}
@@ -89,13 +96,30 @@ def inject_global_styles():
         background: #F8FAFC;
         border-right: 1px solid #E2E8F0;
     }}
-    section[data-testid="stSidebar"] * {{
-        color: {COLORS['text_secondary']};
+    section[data-testid="stSidebar"] .block-container {{
+        padding-top: 1rem !important;
     }}
-    section[data-testid="stSidebar"] .stSelectbox label,
-    section[data-testid="stSidebar"] .stRadio label {{
-        color: {COLORS['text_tertiary']} !important;
-        font-size: 12px;
+    section[data-testid="stSidebar"] p,
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] div {{
+        font-size: 14px;
+    }}
+
+    /* ── 사이드바 메뉴 링크 ── */
+    a[data-testid="stPageLink-NavLink"] {{
+        border-radius: 8px;
+        color: {COLORS['text_secondary']} !important;
+        font-size: 15px !important;
+        font-weight: 500;
+        padding: 8px 12px !important;
+        margin: 2px 0;
+        display: block;
+        transition: all 0.1s;
+        text-decoration: none !important;
+    }}
+    a[data-testid="stPageLink-NavLink"]:hover {{
+        background: #EFF6FF !important;
+        color: {COLORS['accent_gold']} !important;
     }}
 
     /* ── 버튼 ── */
@@ -103,24 +127,26 @@ def inject_global_styles():
         background: {COLORS['accent_gold']};
         color: white;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
         font-weight: 600;
-        font-size: 14px;
-        padding: 8px 16px;
+        font-size: 16px !important;
+        padding: 10px 20px;
         transition: all 0.15s ease;
+        letter-spacing: 0.01em;
     }}
     .stButton > button:hover {{
         background: #1D4ED8;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(30,64,175,0.25);
+        box-shadow: 0 6px 16px rgba(30,64,175,0.3);
     }}
     .stButton > button[kind="secondary"] {{
         background: white;
         color: {COLORS['text_secondary']};
-        border: 1px solid {COLORS['border_subtle']};
+        border: 1.5px solid {COLORS['border_subtle']};
     }}
     .stButton > button[kind="secondary"]:hover {{
         background: {COLORS['bg_elevated']};
+        border-color: {COLORS['border_strong']};
         transform: none;
         box-shadow: none;
     }}
@@ -128,105 +154,109 @@ def inject_global_styles():
     /* ── 입력 필드 ── */
     .stTextInput > div > div > input,
     .stTextArea textarea,
-    .stSelectbox > div > div {{
+    .stSelectbox > div > div,
+    .stNumberInput input {{
         background: white;
-        border: 1px solid {COLORS['border_subtle']};
-        border-radius: 6px;
+        border: 1.5px solid {COLORS['border_subtle']};
+        border-radius: 8px;
         color: {COLORS['text_primary']};
-        font-size: 14px;
+        font-size: 15px !important;
+        padding: 10px 14px;
     }}
     .stTextInput > div > div > input:focus,
     .stTextArea textarea:focus {{
         border-color: {COLORS['accent_gold']};
-        box-shadow: 0 0 0 3px rgba(30,64,175,0.1);
+        box-shadow: 0 0 0 3px rgba(30,64,175,0.12);
+        outline: none;
+    }}
+    .stTextInput label, .stTextArea label,
+    .stSelectbox label, .stNumberInput label {{
+        font-size: 14px !important;
+        font-weight: 600;
+        color: {COLORS['text_secondary']} !important;
+        margin-bottom: 4px;
     }}
 
     /* ── 파일 업로더 ── */
     .stFileUploader > div {{
         background: {COLORS['bg_panel']};
         border: 2px dashed {COLORS['border_subtle']};
-        border-radius: 8px;
+        border-radius: 10px;
+        padding: 1.5rem;
     }}
 
     /* ── 탭 ── */
     .stTabs [data-baseweb="tab-list"] {{
         background: {COLORS['bg_panel']};
-        border-radius: 8px;
+        border-radius: 10px;
         padding: 4px;
         gap: 4px;
-        border-bottom: none;
     }}
     .stTabs [data-baseweb="tab"] {{
         background: transparent;
-        border-radius: 6px;
+        border-radius: 8px;
         color: {COLORS['text_tertiary']};
         font-weight: 500;
-        font-size: 14px;
+        font-size: 15px !important;
         border: none;
-        padding: 6px 16px;
+        padding: 8px 20px;
     }}
     .stTabs [aria-selected="true"] {{
         background: white !important;
         color: {COLORS['accent_gold']} !important;
-        font-weight: 600;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        font-weight: 700 !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }}
+
+    /* ── 카드/컨테이너 ── */
+    div[data-testid="stVerticalBlockBorderWrapper"] {{
+        border: 1.5px solid {COLORS['border_subtle']} !important;
+        border-radius: 10px !important;
+        background: white !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+        padding: 4px;
     }}
 
     /* ── 데이터프레임 ── */
     .stDataFrame {{
-        border: 1px solid {COLORS['border_subtle']};
-        border-radius: 8px;
+        border: 1.5px solid {COLORS['border_subtle']};
+        border-radius: 10px;
         overflow: hidden;
-    }}
-
-    /* ── 컨테이너/카드 ── */
-    div[data-testid="stVerticalBlockBorderWrapper"] {{
-        border: 1px solid {COLORS['border_subtle']} !important;
-        border-radius: 8px !important;
-        background: white !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
-    }}
-
-    /* ── 진행률/슬라이더 ── */
-    .stProgress > div > div {{
-        background: {COLORS['accent_gold']};
-    }}
-
-    /* ── 알림 ── */
-    .stSuccess {{ background: #ECFDF5; border-color: #059669; color: #065F46; }}
-    .stError   {{ background: #FEF2F2; border-color: #DC2626; color: #991B1B; }}
-    .stWarning {{ background: #FFFBEB; border-color: #D97706; color: #92400E; }}
-    .stInfo    {{ background: #EFF6FF; border-color: #1E40AF; color: #1E3A8A; }}
-
-    /* ── page_link (메뉴) ── */
-    a[data-testid="stPageLink-NavLink"] {{
-        background: transparent;
-        border-radius: 6px;
-        color: {COLORS['text_secondary']} !important;
-        font-size: 14px;
-        font-weight: 500;
-        padding: 6px 10px;
-        margin: 1px 0;
-        transition: all 0.1s;
-    }}
-    a[data-testid="stPageLink-NavLink"]:hover {{
-        background: {COLORS['bg_elevated']};
-        color: {COLORS['accent_gold']} !important;
+        font-size: 14px !important;
     }}
 
     /* ── 라디오/체크박스 ── */
     .stRadio label, .stCheckbox label {{
         color: {COLORS['text_secondary']} !important;
-        font-size: 14px;
+        font-size: 15px !important;
+        font-weight: 500;
+    }}
+
+    /* ── 알림 ── */
+    .stSuccess, .stError, .stWarning, .stInfo {{
+        font-size: 15px !important;
+        border-radius: 8px;
+        padding: 12px 16px;
+    }}
+    .stSuccess {{ background: #ECFDF5; border-left: 4px solid #059669; color: #065F46; }}
+    .stError   {{ background: #FEF2F2; border-left: 4px solid #DC2626; color: #991B1B; }}
+    .stWarning {{ background: #FFFBEB; border-left: 4px solid #D97706; color: #92400E; }}
+    .stInfo    {{ background: #EFF6FF; border-left: 4px solid #1E40AF; color: #1E3A8A; }}
+
+    /* ── 진행률 ── */
+    .stProgress > div > div {{
+        background: {COLORS['accent_gold']};
+        border-radius: 4px;
     }}
 
     /* ── 구분선 ── */
     hr {{
-        border-color: {COLORS['border_subtle']};
-        margin: 16px 0;
+        border: none;
+        border-top: 1.5px solid {COLORS['border_subtle']};
+        margin: 20px 0;
     }}
 
-    /* ── spinner ── */
+    /* ── 스피너 ── */
     .stSpinner > div {{
         border-top-color: {COLORS['accent_gold']} !important;
     }}
@@ -241,46 +271,49 @@ def inject_global_styles():
     st.markdown(css, unsafe_allow_html=True)
 
 
-# ============================================================
-# 브랜드 헤더
-# ============================================================
 def render_brand_header():
-    """각 페이지에서 sidebar.render_brand_header()를 호출하면 됩니다.
-    이 함수는 sidebar를 import 못 할 때 폴백용."""
+    """상단 헤더 — 프로젝트 정보 + 우측 날짜/시간"""
     from datetime import datetime
     now = datetime.now()
     weekdays = ["월", "화", "수", "목", "금", "토", "일"]
     wd = weekdays[now.weekday()]
     st.markdown(
         f'<div style="display:flex;justify-content:space-between;align-items:flex-start;'
-        f'padding-bottom:14px;margin-bottom:6px;'
+        f'padding:16px 0 18px 0;margin-bottom:8px;'
         f'border-bottom:2px solid {COLORS["border_subtle"]};">'
+
+        # 왼쪽
         f'<div>'
-        f'<div style="font-size:11px;font-weight:600;color:{COLORS["accent_gold"]};'
-        f'letter-spacing:0.04em;margin-bottom:4px;">AI HACKATHON · SCM CAPSTONE</div>'
-        f'<div style="font-size:17px;font-weight:700;color:{COLORS["text_primary"]};'
-        f'line-height:1.35;">AI 머신비전 기반 실시간 생산·재고 검증 시스템</div>'
-        f'<div style="font-size:12px;color:{COLORS["text_tertiary"]};margin-top:4px;">'
-        f'인천대학교 동북아물류대학원 &nbsp;·&nbsp; 발표자 정승현</div>'
-        f'</div>'
-        f'<div style="text-align:right;flex-shrink:0;">'
-        f'<div style="font-size:26px;font-weight:700;color:{COLORS["text_primary"]};'
-        f'line-height:1;">{now.strftime("%H:%M")}</div>'
-        f'<div style="font-size:11px;color:{COLORS["text_muted"]};margin-top:4px;">'
-        f'{now.strftime("%Y.%m.%d")} ({wd})</div>'
-        f'</div></div>',
+        f'<div style="font-size:12px;font-weight:700;color:{COLORS["accent_gold"]};'
+        f'letter-spacing:0.06em;margin-bottom:6px;">'
+        f'AI HACKATHON &nbsp;·&nbsp; SCM CAPSTONE</div>'
+        f'<div style="font-size:22px;font-weight:800;color:{COLORS["text_primary"]};'
+        f'line-height:1.3;letter-spacing:-0.02em;margin-bottom:8px;">'
+        f'AI 머신비전 기반 실시간 생산·재고 검증 시스템</div>'
+        f'<div style="font-size:14px;color:{COLORS["text_tertiary"]};'
+        f'font-weight:500;line-height:1.6;">'
+        f'인천대학교 동북아물류대학원 &nbsp;·&nbsp; 발표자 &nbsp;정승현'
+        f'</div></div>'
+
+        # 오른쪽: 시간
+        f'<div style="text-align:right;flex-shrink:0;padding-left:24px;">'
+        f'<div style="font-size:36px;font-weight:800;color:{COLORS["text_primary"]};'
+        f'letter-spacing:-0.03em;line-height:1;">'
+        f'{now.strftime("%H:%M")}</div>'
+        f'<div style="font-size:13px;color:{COLORS["text_muted"]};'
+        f'margin-top:6px;font-weight:500;">'
+        f'{now.strftime("%Y. %m. %d")} ({wd})'
+        f'</div></div>'
+        f'</div>',
         unsafe_allow_html=True,
     )
 
 
-# ============================================================
-# 페이지 부제목
-# ============================================================
 def render_page_subtitle(text: str):
     st.markdown(
-        f'<div style="font-size:12px;font-weight:500;'
-        f'color:{COLORS["text_muted"]};letter-spacing:0.05em;'
-        f'text-transform:uppercase;margin-bottom:20px;">'
+        f'<div style="font-size:13px;font-weight:600;'
+        f'color:{COLORS["text_muted"]};letter-spacing:0.06em;'
+        f'text-transform:uppercase;margin-bottom:24px;">'
         f'{text}</div>',
         unsafe_allow_html=True,
     )
