@@ -29,14 +29,18 @@ def load_data():
     return df
 
 df = load_data()
-TODAY = datetime.date.today()     # 실제 오늘 날짜 사용
+DATA_LAST = df["date"].max()          # CSV 마지막 날짜
+TODAY     = datetime.date.today()     # 실제 오늘 날짜
+DATE_SHIFT = TODAY - DATA_LAST        # 날짜 시프트 (CSV→오늘 기준)
+# CSV 날짜를 오늘 기준으로 시프트
+df = df.copy()
+df["date"] = df["date"].apply(lambda d: d + DATE_SHIFT)
 WIN_START = TODAY - timedelta(days=2)
 WIN_END   = TODAY + timedelta(days=5)
 ALL_DATES = [WIN_START + timedelta(days=i) for i in range(8)]
 
 # 일평균 (최근 14일 기준 예측용)
-DATA_LAST  = df["date"].max()
-recent_14  = df[df["date"] >= DATA_LAST - timedelta(days=13)]  # CSV 실제 데이터 기준
+recent_14  = df[df["date"] >= TODAY - timedelta(days=13)]
 avg_total  = len(recent_14) / 14
 avg_ok     = len(recent_14[recent_14["verdict"] == "OK"]) / 14
 avg_ng     = avg_total - avg_ok

@@ -31,14 +31,18 @@ def load_data():
 
 df = load_data()
 df_ok = df[df["is_ok"]]
-TODAY     = datetime.date.today()  # 실제 오늘 날짜 사용
+DATA_LAST  = df["date"].max()
+TODAY      = datetime.date.today()
+DATE_SHIFT = TODAY - DATA_LAST
+df         = df.copy()
+df["date"] = df["date"].apply(lambda d: d + DATE_SHIFT)
+df_ok      = df[df["is_ok"]]
 WIN_START = TODAY - timedelta(days=2)
 WIN_END   = TODAY + timedelta(days=5)
 ALL_DATES = [WIN_START + timedelta(days=i) for i in range(8)]
 
 # 일평균 (최근 14일)
-DATA_LAST   = df["date"].max()
-recent_14   = df_ok[df_ok["date"] >= DATA_LAST - timedelta(days=13)]  # CSV 실제 데이터 기준
+recent_14   = df_ok[df_ok["date"] >= TODAY - timedelta(days=13)]
 avg_ok_day  = len(recent_14) / 14
 avg_stores  = recent_14.groupby("destination_store")["crate_id"].count()
 store_ratio = (avg_stores / avg_stores.sum()).to_dict() if len(avg_stores) > 0 else {}
