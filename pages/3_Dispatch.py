@@ -5,8 +5,9 @@
 
 import streamlit as st
 import pandas as pd
-from datetime import timedelta
+from datetime import timedelta, timezone as _tz
 import datetime
+_KST = datetime.timezone(datetime.timedelta(hours=9))
 from styles import inject_global_styles, render_page_subtitle, COLORS
 from sidebar import ensure_session_state, render_sidebar, render_brand_header
 

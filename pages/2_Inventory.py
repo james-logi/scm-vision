@@ -5,8 +5,9 @@ Page 3: 재고 현황
 
 import streamlit as st
 import pandas as pd
-from datetime import timedelta
+from datetime import timedelta, timezone as _tz
 import datetime
+_KST = datetime.timezone(datetime.timedelta(hours=9))
 from styles import inject_global_styles, render_page_subtitle, COLORS
 from sidebar import ensure_session_state, render_sidebar, render_brand_header
 from sku_registry import SkuRegistry
@@ -43,7 +44,7 @@ def load_data():
 
 df = load_data()
 registry = SkuRegistry()
-today = datetime.date.today()  # 실제 오늘 날짜 사용
+today = datetime.datetime.now(_KST).date()  # 실제 오늘 날짜 사용
 data_last = df["date"].max()  # CSV 데이터 마지막 날짜 (필터링용)
 
 # ─── 필터 ───

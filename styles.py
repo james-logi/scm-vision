@@ -320,8 +320,8 @@ def inject_global_styles():
 
 def render_brand_header():
     """상단 헤더 — 프로젝트 정보 + 우측 날짜"""
-    from datetime import datetime
-    now = datetime.now()
+    from datetime import datetime, timezone, timedelta
+    now = datetime.now(timezone(timedelta(hours=9)))
     weekdays = ["월", "화", "수", "목", "금", "토", "일"]
     wd = weekdays[now.weekday()]
     st.markdown(
