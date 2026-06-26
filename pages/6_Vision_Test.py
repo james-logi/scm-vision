@@ -151,6 +151,7 @@ with act_col2:
 for k, v in {
     "vision_result": None,
     "vision_elapsed": 0.0,
+    "vision_annotated_bytes": None,
     "uploader_key": 0,
     "edit_sku_id": None,
     "scan_running": False,
@@ -474,14 +475,15 @@ with tab1:
                     st.session_state.vision_elapsed = elapsed
                     st.session_state.vision_image_bytes = img_bytes
                     st.session_state.vision_image_name = uploaded.name
+                    # 어노테이션 이미지를 별도 키로 명시적 저장
+                    st.session_state.vision_annotated_bytes = r.get("annotated_image") or img_bytes
                     InspectionLog.save(r, uploaded.name, elapsed)
                 st.rerun()
         elif st.session_state.get("vision_preview_bytes"):
-            # 검사 완료 후 어노테이션 이미지 표시
-            result = st.session_state.get("vision_result")
-            ann = result.get("annotated_image") if result else None
+            # 검사 완료 후 — annotated_bytes 키 우선 사용
+            ann = st.session_state.get("vision_annotated_bytes")
             display_img = ann if ann else st.session_state.vision_preview_bytes
-            caption = "📍 AI Vision 판정 결과" if ann else st.session_state.get("vision_preview_name","")
+            caption = "📍 AI Vision 판정 결과" if st.session_state.get("vision_result") else st.session_state.get("vision_preview_name","")
             st.image(display_img, use_container_width=True, caption=caption)
         else:
             st.markdown(
@@ -498,9 +500,10 @@ with tab1:
         if r:
             render_result_card(r, st.session_state.vision_elapsed)
             if st.button("↻ 새 이미지 테스트", key="btn_reset"):
-                st.session_state.vision_result = None
-                st.session_state.vision_preview_bytes = None
-                st.session_state.vision_preview_name = None
+                st.session_state.vision_result         = None
+                st.session_state.vision_preview_bytes  = None
+                st.session_state.vision_preview_name   = None
+                st.session_state.vision_annotated_bytes = None  # 명시적 초기화
                 st.session_state.uploader_key += 1
                 st.rerun()
         else:
