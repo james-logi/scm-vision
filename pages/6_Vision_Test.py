@@ -202,12 +202,12 @@ items 규칙:
 
 
 def annotate_image(image_bytes, items, verdict, count=0, sku_name=""):
-    """감지된 제품에 넘버링 박스 + 판정 오버레이를 그려서 반환"""
+    """감지된 제품에 넘버링 박스 + 판정 배너를 그려서 반환"""
     try:
         img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-        draw = ImageDraw.Draw(img, "RGBA")
         W, H = img.size
 
+        # 판정별 색상 (RGB)
         color_map = {
             "OK":           (5, 150, 105),
             "NG":           (220, 38, 38),
@@ -215,62 +215,78 @@ def annotate_image(image_bytes, items, verdict, count=0, sku_name=""):
         }
         box_color = color_map.get(verdict, color_map["UNCLASSIFIED"])
 
-        # ── 아이템별 박스 그리기 ──
+        # ── 상단 배너 (판정 결과) ──
+        banner_h = max(40, H // 14)
+        banner = Image.new("RGB", (W, banner_h), box_color)
+        img.paste(banner, (0, 0))
+
+        draw = ImageDraw.Draw(img)
+
+        try:
+            font_b = ImageFont.truetype(
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                max(16, banner_h // 2))
+            font_n = ImageFont.truetype(
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                max(14, W // 55))
+        except Exception:
+            font_b = ImageFont.load_default()
+            font_n = font_b
+
+        verdict_label = {"OK": "✓  OK", "NG": "✗  NG", "UNCLASSIFIED": "?  미분류"}.get(verdict, verdict)
+        label = f"  {verdict_label}   |   {count}개 감지   |   {sku_name}" if sku_name else f"  {verdict_label}   |   {count}개 감지"
+        draw.text((12, banner_h // 5), label, fill=(255, 255, 255), font=font_b)
+
+        # ── 아이템별 박스 + 번호 ──
+        lw = max(2, W // 180)
         for item in items:
             try:
                 x1 = int(item["x_pct"] / 100 * W)
                 y1 = int(item["y_pct"] / 100 * H)
                 x2 = int(x1 + item["w_pct"] / 100 * W)
                 y2 = int(y1 + item["h_pct"] / 100 * H)
-                x1,y1 = max(0,x1), max(0,y1)
-                x2,y2 = min(W,x2), min(H,y2)
-                if x2<=x1 or y2<=y1:
+                x1, y1 = max(0, x1), max(banner_h, y1)
+                x2, y2 = min(W - 1, x2), min(H - 1, y2)
+                if x2 <= x1 or y2 <= y1:
                     continue
 
-                # 반투명 채우기
-                draw.rectangle([x1,y1,x2,y2], fill=(*box_color,45))
-                # 테두리 (두께)
-                lw = max(2, W//180)
+                # 테두리 박스
                 for i in range(lw):
-                    draw.rectangle([x1+i,y1+i,x2-i,y2-i], outline=(*box_color,220))
+                    draw.rectangle([x1+i, y1+i, x2-i, y2-i], outline=box_color)
 
-                # 번호 배지
+                # 번호 배지 배경
                 num = str(item["id"])
-                bw = max(26, W//35)
-                bh = max(22, H//32)
-                bx, by = x1, max(0, y1-bh)
-                draw.rectangle([bx,by,bx+bw,by+bh], fill=(*box_color,230))
-                try:
-                    font_n = ImageFont.truetype(
-                        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-                        max(13, W//55))
-                except Exception:
-                    font_n = ImageFont.load_default()
-                draw.text((bx+4, by+2), num, fill=(255,255,255,255), font=font_n)
+                bw = max(26, W // 35)
+                bh = max(22, H // 30)
+                bx = x1
+                by = max(banner_h, y1 - bh)
+                draw.rectangle([bx, by, bx+bw, by+bh], fill=box_color)
+                draw.text((bx + 4, by + 2), num, fill=(255, 255, 255), font=font_n)
             except Exception:
                 continue
-
-        # ── 상단 판정 배너 (항상 표시) ──
-        banner_h = max(36, H//16)
-        verdict_label = {"OK":"✓ OK","NG":"✗ NG","UNCLASSIFIED":"? 미분류"}.get(verdict, verdict)
-        bg_alpha = 210
-        draw.rectangle([0,0,W,banner_h], fill=(*box_color, bg_alpha))
-
-        try:
-            font_b = ImageFont.truetype(
-                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-                max(16, banner_h//2))
-        except Exception:
-            font_b = ImageFont.load_default()
-
-        label = f"  {verdict_label}  |  {count}개 감지  |  {sku_name}" if sku_name else f"  {verdict_label}  |  {count}개 감지"
-        draw.text((10, banner_h//4), label, fill=(255,255,255,255), font=font_b)
 
         buf = io.BytesIO()
         img.save(buf, format="JPEG", quality=92)
         return buf.getvalue()
-    except Exception:
-        return image_bytes
+
+    except Exception as e:
+        # 실패 시 배너만이라도 붙여서 반환
+        try:
+            img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+            W, H = img.size
+            color_map = {"OK":(5,150,105),"NG":(220,38,38),"UNCLASSIFIED":(100,116,139)}
+            c = color_map.get(verdict,(100,116,139))
+            banner_h = max(40, H//14)
+            banner = Image.new("RGB",(W,banner_h),c)
+            img.paste(banner,(0,0))
+            draw = ImageDraw.Draw(img)
+            label = f"  {verdict}  |  {count}개"
+            draw.text((12,8), label, fill=(255,255,255))
+            buf = io.BytesIO()
+            img.save(buf, format="JPEG", quality=92)
+            return buf.getvalue()
+        except Exception:
+            return image_bytes
 
 
 def match_preloaded(fname):
