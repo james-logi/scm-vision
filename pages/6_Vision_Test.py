@@ -201,63 +201,76 @@ items 규칙:
 - 개수가 많으면 대표 위치만 반환 가능 (최대 20개)"""
 
 
-def annotate_image(image_bytes, items, verdict):
-    """감지된 제품에 넘버링 박스를 그려서 반환"""
+def annotate_image(image_bytes, items, verdict, count=0, sku_name=""):
+    """감지된 제품에 넘버링 박스 + 판정 오버레이를 그려서 반환"""
     try:
         img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
         draw = ImageDraw.Draw(img, "RGBA")
         W, H = img.size
 
-        # 판정별 색상
         color_map = {
-            "OK":            (5, 150, 105),   # 초록
-            "NG":            (220, 38, 38),   # 빨강
-            "UNCLASSIFIED":  (100, 116, 139), # 회색
+            "OK":           (5, 150, 105),
+            "NG":           (220, 38, 38),
+            "UNCLASSIFIED": (100, 116, 139),
         }
         box_color = color_map.get(verdict, color_map["UNCLASSIFIED"])
-        fill_color = (*box_color, 40)   # 반투명 채우기
 
+        # ── 아이템별 박스 그리기 ──
         for item in items:
             try:
                 x1 = int(item["x_pct"] / 100 * W)
                 y1 = int(item["y_pct"] / 100 * H)
                 x2 = int(x1 + item["w_pct"] / 100 * W)
                 y2 = int(y1 + item["h_pct"] / 100 * H)
-
-                # 범위 클램핑
-                x1, y1 = max(0,x1), max(0,y1)
-                x2, y2 = min(W,x2), min(H,y2)
+                x1,y1 = max(0,x1), max(0,y1)
+                x2,y2 = min(W,x2), min(H,y2)
                 if x2<=x1 or y2<=y1:
                     continue
 
                 # 반투명 채우기
-                draw.rectangle([x1,y1,x2,y2], fill=fill_color)
-                # 테두리
-                lw = max(2, W//200)
+                draw.rectangle([x1,y1,x2,y2], fill=(*box_color,45))
+                # 테두리 (두께)
+                lw = max(2, W//180)
                 for i in range(lw):
-                    draw.rectangle([x1+i,y1+i,x2-i,y2-i], outline=(*box_color,230))
+                    draw.rectangle([x1+i,y1+i,x2-i,y2-i], outline=(*box_color,220))
 
                 # 번호 배지
                 num = str(item["id"])
-                bw, bh = max(24, W//40), max(24, H//30)
+                bw = max(26, W//35)
+                bh = max(22, H//32)
                 bx, by = x1, max(0, y1-bh)
-                draw.rectangle([bx, by, bx+bw, by+bh],
-                                fill=(*box_color,230), outline=(*box_color,255))
-                # 번호 텍스트
+                draw.rectangle([bx,by,bx+bw,by+bh], fill=(*box_color,230))
                 try:
-                    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-                                             max(14, W//60))
+                    font_n = ImageFont.truetype(
+                        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                        max(13, W//55))
                 except Exception:
-                    font = ImageFont.load_default()
-                draw.text((bx+4, by+2), num, fill=(255,255,255,255), font=font)
+                    font_n = ImageFont.load_default()
+                draw.text((bx+4, by+2), num, fill=(255,255,255,255), font=font_n)
             except Exception:
                 continue
+
+        # ── 상단 판정 배너 (항상 표시) ──
+        banner_h = max(36, H//16)
+        verdict_label = {"OK":"✓ OK","NG":"✗ NG","UNCLASSIFIED":"? 미분류"}.get(verdict, verdict)
+        bg_alpha = 210
+        draw.rectangle([0,0,W,banner_h], fill=(*box_color, bg_alpha))
+
+        try:
+            font_b = ImageFont.truetype(
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                max(16, banner_h//2))
+        except Exception:
+            font_b = ImageFont.load_default()
+
+        label = f"  {verdict_label}  |  {count}개 감지  |  {sku_name}" if sku_name else f"  {verdict_label}  |  {count}개 감지"
+        draw.text((10, banner_h//4), label, fill=(255,255,255,255), font=font_b)
 
         buf = io.BytesIO()
         img.save(buf, format="JPEG", quality=92)
         return buf.getvalue()
     except Exception:
-        return image_bytes  # 실패 시 원본 반환
+        return image_bytes
 
 
 def match_preloaded(fname):
@@ -330,13 +343,14 @@ def analyze(image_bytes, fname):
     r = match_preloaded(fname) or call_api(image_bytes, fname)
     elapsed = round(time_module.time() - t0, 2)
 
-    # 어노테이션 이미지 생성
-    items = r.get("items", [])
-    if items:
-        r["annotated_image"] = annotate_image(image_bytes, items, r.get("verdict","UNCLASSIFIED"))
-    else:
-        r["annotated_image"] = None
-
+    # items 유무와 관계없이 항상 어노테이션 이미지 생성
+    r["annotated_image"] = annotate_image(
+        image_bytes,
+        r.get("items", []),
+        r.get("verdict", "UNCLASSIFIED"),
+        r.get("primary_count", 0),
+        r.get("sku_name", ""),
+    )
     return r, elapsed
 
 
@@ -447,16 +461,12 @@ with tab1:
                     InspectionLog.save(r, uploaded.name, elapsed)
                 st.rerun()
         elif st.session_state.get("vision_preview_bytes"):
-            # 검사 완료 후 어노테이션 이미지 또는 원본 표시
+            # 검사 완료 후 어노테이션 이미지 표시
             result = st.session_state.get("vision_result")
-            if result and result.get("annotated_image"):
-                st.image(result["annotated_image"], use_container_width=True,
-                         caption="📍 AI Vision 감지 결과 (넘버링 표시)")
-            else:
-                st.image(st.session_state.vision_preview_bytes, use_container_width=True)
-            st.caption(
-                f'↩ {st.session_state.get("vision_preview_name", "")} '
-                f'(이전 업로드 — 새 파일을 올리면 교체됩니다)')
+            ann = result.get("annotated_image") if result else None
+            display_img = ann if ann else st.session_state.vision_preview_bytes
+            caption = "📍 AI Vision 판정 결과" if ann else st.session_state.get("vision_preview_name","")
+            st.image(display_img, use_container_width=True, caption=caption)
         else:
             st.markdown(
                 f'<div style="background:{COLORS["bg_panel"]};'
