@@ -7,7 +7,9 @@ sidebar.py — 사이드바 + 상단 헤더 v3
 """
 
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+KST = timezone(timedelta(hours=9))
 from styles import COLORS, render_brand_header as _base_header
 
 
@@ -36,7 +38,7 @@ def safe_page_link(path: str, label: str):
 
 def render_brand_header():
     """상단 헤더 — 프로젝트 정보 + 우측 날짜/시간"""
-    now = datetime.now()
+    now = datetime.now(KST)
     weekdays = ["월", "화", "수", "목", "금", "토", "일"]
     wd = weekdays[now.weekday()]
 

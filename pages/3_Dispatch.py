@@ -33,7 +33,7 @@ def load_data():
 df = load_data()
 df_ok = df[df["is_ok"]]
 DATA_LAST  = df["date"].max()
-TODAY      = datetime.date.today()
+TODAY      = datetime.datetime.now(_KST).date()  # KST 오늘 날짜
 DATE_SHIFT = TODAY - DATA_LAST
 df         = df.copy()
 df["date"] = df["date"].apply(lambda d: d + DATE_SHIFT)

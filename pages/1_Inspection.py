@@ -31,7 +31,7 @@ def load_data():
 
 df = load_data()
 DATA_LAST = df["date"].max()          # CSV 마지막 날짜
-TODAY     = datetime.date.today()     # 실제 오늘 날짜
+TODAY     = datetime.datetime.now(_KST).date()  # KST 오늘 날짜
 DATE_SHIFT = TODAY - DATA_LAST        # 날짜 시프트 (CSV→오늘 기준)
 # CSV 날짜를 오늘 기준으로 시프트
 df = df.copy()
