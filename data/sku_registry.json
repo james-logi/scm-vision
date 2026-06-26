@@ -1,0 +1,34 @@
+{
+  "skus": [
+    {
+      "sku_id": "SKU-001",
+      "sku_name": "버거킹 햄버거번",
+      "loading_type": "pack_based",
+      "unit_per_pack": 6,
+      "packs_per_box": 3,
+      "units_per_box": null,
+      "label_text": "버거킹 햄버거번",
+      "visual_features": "둥근 모양의 햄버거번, 표면에 깨 토핑, 비닐 포장에 빨간색 BURGER KING 로고",
+      "category": "햄버거번",
+      "expiry_format": "YY.MM.DD",
+      "reference_images": [],
+      "registered_at": "2026-05-23T09:24:53",
+      "is_active": true
+    },
+    {
+      "sku_id": "SKU-002",
+      "sku_name": "곰곰 데일리식빵",
+      "loading_type": "unit_based",
+      "unit_per_pack": null,
+      "packs_per_box": null,
+      "units_per_box": 8,
+      "label_text": "데일리식빵",
+      "visual_features": "직사각형 슬라이스 식빵, 비닐 봉지에 흰 라벨 + 파란색 'Daily Bread' 문구, 'gomgom' 브랜드명",
+      "category": "식빵",
+      "expiry_format": "YY.MM.DD",
+      "reference_images": [],
+      "registered_at": "2026-05-23T09:24:53",
+      "is_active": true
+    }
+  ]
+}
