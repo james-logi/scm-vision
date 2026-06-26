@@ -471,12 +471,12 @@ with tab1:
             if st.button("🔍 검사 시작", width="stretch", key="btn_manual"):
                 with st.spinner("분석 중..."):
                     r, elapsed = analyze(img_bytes, uploaded.name)
-                    st.session_state.vision_result = r
-                    st.session_state.vision_elapsed = elapsed
-                    st.session_state.vision_image_bytes = img_bytes
-                    st.session_state.vision_image_name = uploaded.name
-                    # 어노테이션 이미지를 별도 키로 명시적 저장
+                    st.session_state.vision_result          = r
+                    st.session_state.vision_elapsed         = elapsed
+                    st.session_state.vision_image_bytes     = img_bytes
+                    st.session_state.vision_image_name      = uploaded.name
                     st.session_state.vision_annotated_bytes = r.get("annotated_image") or img_bytes
+                    st.session_state.uploader_key          += 1  # 파일 업로더 초기화 → elif 분기로 이동
                     InspectionLog.save(r, uploaded.name, elapsed)
                 st.rerun()
         elif st.session_state.get("vision_preview_bytes"):
