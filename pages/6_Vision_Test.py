@@ -11,7 +11,10 @@ import os
 import base64
 import time as time_module
 import glob
-from styles import inject_global_styles, render_brand_header, render_page_subtitle, COLORS
+import io
+from PIL import Image, ImageDraw, ImageFont
+from styles import inject_global_styles, render_page_subtitle, COLORS
+from sidebar import render_brand_header
 from sidebar import ensure_session_state, render_sidebar
 from sku_registry import SkuRegistry
 from inspection_log import InspectionLog
@@ -190,7 +193,71 @@ def build_prompt():
 - 개별 라벨 확인보다 그리드 구조 파악을 우선시하세요
 
 JSON만 반환:
-{{"verdict":"OK|NG|UNCLASSIFIED","sku_id":"매칭ID or null","sku_name":"상품명","primary_count":숫자,"confidence":0-100,"analysis":"한국어 2-3문장. 행×열 구조와 카운팅 근거 명시"}}"""
+{{"verdict":"OK|NG|UNCLASSIFIED","sku_id":"매칭ID or null","sku_name":"상품명","primary_count":숫자,"confidence":0-100,"analysis":"한국어 2-3문장. 행×열 구조와 카운팅 근거 명시","items":[{{"id":1,"x_pct":숫자,"y_pct":숫자,"w_pct":숫자,"h_pct":숫자}}]}}
+
+items 규칙:
+- 감지된 제품 각각의 위치를 이미지 크기 대비 퍼센트(0-100)로 반환
+- x_pct, y_pct: 좌측상단 좌표, w_pct, h_pct: 폭/높이
+- 개수가 많으면 대표 위치만 반환 가능 (최대 20개)"""
+
+
+def annotate_image(image_bytes, items, verdict):
+    """감지된 제품에 넘버링 박스를 그려서 반환"""
+    try:
+        img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        draw = ImageDraw.Draw(img, "RGBA")
+        W, H = img.size
+
+        # 판정별 색상
+        color_map = {
+            "OK":            (5, 150, 105),   # 초록
+            "NG":            (220, 38, 38),   # 빨강
+            "UNCLASSIFIED":  (100, 116, 139), # 회색
+        }
+        box_color = color_map.get(verdict, color_map["UNCLASSIFIED"])
+        fill_color = (*box_color, 40)   # 반투명 채우기
+
+        for item in items:
+            try:
+                x1 = int(item["x_pct"] / 100 * W)
+                y1 = int(item["y_pct"] / 100 * H)
+                x2 = int(x1 + item["w_pct"] / 100 * W)
+                y2 = int(y1 + item["h_pct"] / 100 * H)
+
+                # 범위 클램핑
+                x1, y1 = max(0,x1), max(0,y1)
+                x2, y2 = min(W,x2), min(H,y2)
+                if x2<=x1 or y2<=y1:
+                    continue
+
+                # 반투명 채우기
+                draw.rectangle([x1,y1,x2,y2], fill=fill_color)
+                # 테두리
+                lw = max(2, W//200)
+                for i in range(lw):
+                    draw.rectangle([x1+i,y1+i,x2-i,y2-i], outline=(*box_color,230))
+
+                # 번호 배지
+                num = str(item["id"])
+                bw, bh = max(24, W//40), max(24, H//30)
+                bx, by = x1, max(0, y1-bh)
+                draw.rectangle([bx, by, bx+bw, by+bh],
+                                fill=(*box_color,230), outline=(*box_color,255))
+                # 번호 텍스트
+                try:
+                    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                                             max(14, W//60))
+                except Exception:
+                    font = ImageFont.load_default()
+                draw.text((bx+4, by+2), num, fill=(255,255,255,255), font=font)
+            except Exception:
+                continue
+
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=92)
+        return buf.getvalue()
+    except Exception:
+        return image_bytes  # 실패 시 원본 반환
 
 
 def match_preloaded(fname):
@@ -261,7 +328,16 @@ def call_api(image_bytes, fname):
 def analyze(image_bytes, fname):
     t0 = time_module.time()
     r = match_preloaded(fname) or call_api(image_bytes, fname)
-    return r, round(time_module.time() - t0, 2)
+    elapsed = round(time_module.time() - t0, 2)
+
+    # 어노테이션 이미지 생성
+    items = r.get("items", [])
+    if items:
+        r["annotated_image"] = annotate_image(image_bytes, items, r.get("verdict","UNCLASSIFIED"))
+    else:
+        r["annotated_image"] = None
+
+    return r, elapsed
 
 
 def render_result_card(result, elapsed):
@@ -371,8 +447,13 @@ with tab1:
                     InspectionLog.save(r, uploaded.name, elapsed)
                 st.rerun()
         elif st.session_state.get("vision_preview_bytes"):
-            # 페이지 복귀 시 → 저장된 이미지 복원
-            st.image(st.session_state.vision_preview_bytes, use_container_width=True)
+            # 검사 완료 후 어노테이션 이미지 또는 원본 표시
+            result = st.session_state.get("vision_result")
+            if result and result.get("annotated_image"):
+                st.image(result["annotated_image"], use_container_width=True,
+                         caption="📍 AI Vision 감지 결과 (넘버링 표시)")
+            else:
+                st.image(st.session_state.vision_preview_bytes, use_container_width=True)
             st.caption(
                 f'↩ {st.session_state.get("vision_preview_name", "")} '
                 f'(이전 업로드 — 새 파일을 올리면 교체됩니다)')
