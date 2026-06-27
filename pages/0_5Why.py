@@ -72,66 +72,115 @@ if st.session_state.whys_editing:
 
 # ─── 표시 모드 ───
 else:
-    def render_line(line):
-        line = line.strip()
+    text = st.session_state.whys_text.strip()
+    # 멀티라인 블록 파싱: 연속된 줄을 블록으로 묶음
+    blocks = []
+    current_key  = None
+    current_lines = []
+
+    for raw in text.split("\n"):
+        line = raw.strip()
         if not line:
-            return ""
+            if current_key:
+                blocks.append((current_key, " ".join(current_lines)))
+                current_key, current_lines = None, []
+            continue
         if line.startswith("문제 현상"):
-            return (
+            if current_key:
+                blocks.append((current_key, " ".join(current_lines)))
+            current_key, current_lines = "problem", [line]
+        elif line.startswith("Why"):
+            if current_key:
+                blocks.append((current_key, " ".join(current_lines)))
+            current_key, current_lines = "why", [line]
+        elif line.startswith("→"):
+            if current_key == "why":
+                current_lines.append(line)
+            else:
+                blocks.append(("arrow", line))
+        elif line.startswith("근본 원인"):
+            if current_key:
+                blocks.append((current_key, " ".join(current_lines)))
+            current_key, current_lines = "root", [line.replace("근본 원인 (Root Cause):","").strip()]
+        elif line.startswith("해결책"):
+            if current_key:
+                blocks.append((current_key, " ".join(current_lines)))
+            current_key, current_lines = "solution", [line.replace("해결책:","").strip()]
+        else:
+            if current_key:
+                current_lines.append(line)
+            else:
+                blocks.append(("text", line))
+
+    if current_key:
+        blocks.append((current_key, " ".join(current_lines)))
+
+    html = ""
+    for btype, content in blocks:
+        if btype == "problem":
+            html += (
                 f'<div style="background:{COLORS["bg_panel"]};'
                 f'border-left:4px solid {COLORS["status_danger"]};'
                 f'border-radius:6px;padding:14px 20px;margin-bottom:16px;">'
                 f'<div style="font-size:15px;font-weight:700;'
-                f'color:{COLORS["status_danger"]};line-height:1.6;">⚠ {line}</div>'
+                f'color:{COLORS["status_danger"]};line-height:1.6;">⚠ {content}</div>'
                 f'</div>'
             )
-        if line.startswith("Why"):
-            parts = line.split(".", 1)
-            num  = parts[0].replace("Why","").strip()
-            rest = parts[1].strip() if len(parts) > 1 else ""
-            return (
+        elif btype == "why":
+            lines_w = content.split(" ", 2)
+            num_part = lines_w[0].replace("Why","").replace(".","").strip() if lines_w else ""
+            rest_part = content.split(".", 1)[1].strip() if "." in content else content
+            # 화살표 줄 분리
+            parts_w = content.split("→", 1)
+            title_w = parts_w[0].strip()
+            arrow_w = "→" + parts_w[1].strip() if len(parts_w) > 1 else ""
+            num_w = title_w.split(".", 1)[0].replace("Why","").strip()
+            q_w   = title_w.split(".", 1)[1].strip() if "." in title_w else title_w
+            html += (
                 f'<div style="background:{COLORS["bg_panel"]};'
                 f'border:1px solid {COLORS["border_subtle"]};'
                 f'border-left:4px solid {COLORS["accent_cobalt"]};'
-                f'border-radius:6px;padding:14px 20px;margin-bottom:6px;">'
-                f'<span style="font-size:20px;font-weight:900;'
-                f'color:{COLORS["accent_cobalt"]};">Why {num}</span>'
-                f'<span style="font-size:15px;font-weight:700;'
-                f'color:{COLORS["text_primary"]};margin-left:12px;">{rest}</span>'
+                f'border-radius:6px;padding:14px 20px;margin-bottom:4px;">'
+                f'<span style="font-size:20px;font-weight:900;color:{COLORS["accent_cobalt"]};">Why {num_w}</span>'
+                f'<span style="font-size:15px;font-weight:700;color:{COLORS["text_primary"]};margin-left:12px;">{q_w}</span>'
                 f'</div>'
             )
-        if line.startswith("→"):
-            return (
+            if arrow_w:
+                html += (
+                    f'<div style="font-size:14px;color:{COLORS["text_secondary"]};'
+                    f'padding:4px 0 12px 36px;line-height:1.8;">{arrow_w}</div>'
+                )
+        elif btype == "arrow":
+            html += (
                 f'<div style="font-size:14px;color:{COLORS["text_secondary"]};'
-                f'padding:4px 0 12px 36px;line-height:1.8;">{line}</div>'
+                f'padding:4px 0 12px 36px;line-height:1.8;">{content}</div>'
             )
-        if line.startswith("근본 원인"):
-            rest = line.replace("근본 원인 (Root Cause):","").strip()
-            return (
+        elif btype == "root":
+            html += (
                 f'<div style="background:#FEF2F2;'
                 f'border-left:4px solid {COLORS["status_danger"]};'
                 f'border-radius:6px;padding:16px 20px;margin-top:16px;margin-bottom:8px;">'
-                f'<div style="font-size:11px;font-weight:700;'
-                f'color:{COLORS["status_danger"]};letter-spacing:0.08em;margin-bottom:6px;">'
-                f'🔴 근본 원인 (Root Cause)</div>'
-                f'<div style="font-size:15px;font-weight:600;'
-                f'color:{COLORS["text_primary"]};line-height:1.7;">{rest}</div>'
+                f'<div style="font-size:11px;font-weight:700;color:{COLORS["status_danger"]};'
+                f'letter-spacing:0.08em;margin-bottom:8px;">🔴 근본 원인 (Root Cause)</div>'
+                f'<div style="font-size:15px;font-weight:600;color:{COLORS["text_primary"]};'
+                f'line-height:1.7;">{content}</div>'
                 f'</div>'
             )
-        if line.startswith("해결책"):
-            rest = line.replace("해결책:","").strip()
-            return (
+        elif btype == "solution":
+            html += (
                 f'<div style="background:#ECFDF5;'
                 f'border-left:4px solid {COLORS["status_ok"]};'
                 f'border-radius:6px;padding:16px 20px;margin-top:8px;">'
-                f'<div style="font-size:11px;font-weight:700;'
-                f'color:{COLORS["status_ok"]};letter-spacing:0.08em;margin-bottom:6px;">'
-                f'✅ 해결책</div>'
+                f'<div style="font-size:11px;font-weight:700;color:{COLORS["status_ok"]};'
+                f'letter-spacing:0.08em;margin-bottom:8px;">✅ 해결책</div>'
                 f'<div style="font-size:14px;color:{COLORS["text_primary"]};'
-                f'line-height:1.8;">{rest}</div>'
+                f'line-height:1.8;">{content}</div>'
                 f'</div>'
             )
-        return ""
+        elif btype == "text":
+            html += (
+                f'<div style="font-size:14px;color:{COLORS["text_secondary"]};'
+                f'padding:4px 0;line-height:1.7;">{content}</div>'
+            )
 
-    parts = [render_line(l) for l in st.session_state.whys_text.split("\n")]
-    st.markdown("".join(p for p in parts if p), unsafe_allow_html=True)
+    st.markdown(html, unsafe_allow_html=True)
