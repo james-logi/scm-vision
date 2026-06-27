@@ -121,8 +121,8 @@ def render_sidebar():
         st.divider()
 
         # ── 발표 메뉴 ──
-        safe_page_link("app.py", "🏠  대시보드")
-        safe_page_link("pages/0_5Why.py", "5 Why")
+        safe_page_link("pages/0_5Why.py",  "❓  5 Why ?")
+        safe_page_link("app.py",            "🏠  대시보드")
 
         st.markdown(
             f'<div style="font-size:11px;font-weight:600;'
